@@ -1,5 +1,6 @@
 package cpu;
 
+import interrupts.InterruptManager;
 import mmu.MemoryUnit;
 
 import java.nio.ByteBuffer;
@@ -18,6 +19,7 @@ public class Cpu {
     private boolean instrCompleted = true;
     private boolean finalStageOfInstr = false;
     private int moreCycles = 0;
+    private InterruptManager interruptManager;
 
     public void setA(int a)
     {
@@ -157,6 +159,11 @@ public class Cpu {
         registers[position] = value;
     }
 
+    public void setInterruptManager(InterruptManager interruptManager)
+    {
+        this.interruptManager = interruptManager;
+    }
+
 
     public int findCorrectRegisterFromName(String registerName)
     {
@@ -192,7 +199,7 @@ public class Cpu {
     public void executeInstruction(Instruction instructionToExec, Integer pc)
     {
         System.out.println(instructionToExec.getDescription()+":"+String.format("%02X",pc));
-if(pc==0xcbc6) {
+if(pc==0x272) {
 
     int fromMem = memUnit.loadData(65346);
     System.out.println("addsdfsfsf");
@@ -601,6 +608,23 @@ if(pc==0xcbc6) {
 
                     }
                 }
+                if(instructionToExec.getOperand1().equals("(HL)"))
+                {
+                    int address = this.getHL();
+                    int data = memUnit.loadData(address);
+                    memUnit.writeData(address, (data+1) & 0xff);
+                    if((data & 0x0f) == 0)
+                        this.setHF(1);
+                    else
+                        this.setHF(0);
+
+                    if (((data + 1) & 0xff) == 0)
+                        this.setZF(1);
+                    else
+                        this.setZF(0);
+
+                    this.setNF(0);
+                }
                 this.setPc(this.getPc() + instructionToExec.getByteLength());
                 break;
             }
@@ -834,7 +858,7 @@ if(pc==0xcbc6) {
                 }
                 if(instructionToExec.getOperand1().equals("AF"))
                 {
-                    int value = (this.getA()<<8) | constructFregister();
+                    int value = ((this.getA()<<8) | constructFregister()) & 0xFFFF;
                     memUnit.pushToStack(value);
                     this.setPc(this.getPc()+instructionToExec.getByteLength());
                 }
@@ -983,11 +1007,13 @@ if(pc==0xcbc6) {
             }
             case "DI":
             {
+                this.interruptManager.setIME(0);
                 this.setPc(this.getPc()+instructionToExec.getByteLength());
                 break;
             }
             case "EI":
             {
+                this.interruptManager.setIME(1);
                 this.setPc(this.getPc()+instructionToExec.getByteLength());
                 break;
             }
@@ -1118,6 +1144,11 @@ if(pc==0xcbc6) {
             {
                 this.setPc(this.getPc()+instructionToExec.getByteLength());
             }
+            case "RETI":
+            {
+                this.interruptManager.setIME(1);
+                this.setPc(memUnit.popFromStack());
+            }
         }
     }
 
@@ -1137,8 +1168,10 @@ if(pc==0xcbc6) {
         if(curInstruction!=null)
             if(timer==curInstruction.getCycles() + moreCycles) {
                 executeInstruction(curInstruction, pc);
-                if(instrCompleted)
+                if(instrCompleted) {
                     timer = 0;
+                    checkAndHandleInterrupts();
+                }
         }
 
         timer++;
@@ -1150,19 +1183,19 @@ if(pc==0xcbc6) {
         return mapOfInstructions.findInstructionFromOpcode(hexOpcode);
     }
 
-    public byte constructFregister()
+    public int constructFregister()
     {
-        byte F = 0;
+        int F = 0;
         if(ZF==1)
-            F = (byte) (F | (1<<7));
+            F = F | (1<<7);
         if(NF==1)
-            F = (byte) (F | (1<<6));
+            F = F | (1<<6);
         if(HF==1)
-            F = (byte) (F | (1<<5));
+            F = F | (1<<5);
         if(CF==1)
-            F = (byte) (F | (1<<4));
+            F = F | (1<<4);
 
-        return F;
+        return F & 0xFF;
     }
 
     public int srl(int registerValue)
@@ -1236,6 +1269,17 @@ if(pc==0xcbc6) {
         this.setCF(0);
 
         return (registerValue << 4) | (registerValue>> 4);
+    }
+
+    public void checkAndHandleInterrupts()
+    {
+        if(interruptManager.getIME() == 1) {
+            if ((interruptManager.getIE() & interruptManager.getIF() & 0x1) == 1) {
+                interruptManager.setIME(0);
+                memUnit.pushToStack(this.pc);
+                this.setPc(0x40);
+            }
+        }
     }
 }
 

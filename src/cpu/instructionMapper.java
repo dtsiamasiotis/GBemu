@@ -1439,6 +1439,7 @@ public class instructionMapper {
         instructionsMap[217].setDescription("RETI");
         instructionsMap[217].setOpCode("D9");
         instructionsMap[217].setByteLength(1);
+        instructionsMap[217].setCycles(16);
 
         instructionsMap[218].setDescription("JP");
         instructionsMap[218].setOpCode("DA");
