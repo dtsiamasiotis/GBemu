@@ -85,7 +85,7 @@ public class Gpu {
             state = "OAMSEARCH";
             VBLANKtimer = 0;
             resetLY();
-            memoryUnit.writeData(0xFFFF,0);
+            memoryUnit.writeData(0xFF0F,0);
         }
         if(state.equals("HBLANK"))
         {
@@ -112,7 +112,8 @@ public class Gpu {
 
         if(LY==144) {
             state = "VBLANK";
-            memoryUnit.writeData(0xFFFF,1);
+            System.out.println("VBLANK");
+            memoryUnit.writeData(0xFF0F,1);
             synchronized (this) {
                 gui.refresh();
             }

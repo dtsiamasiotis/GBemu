@@ -199,7 +199,7 @@ public class Cpu {
     public void executeInstruction(Instruction instructionToExec, Integer pc)
     {
         System.out.println(instructionToExec.getDescription()+":"+String.format("%02X",pc));
-if(pc==0x272) {
+if(pc==0x2cd) {
 
     int fromMem = memUnit.loadData(65346);
     System.out.println("addsdfsfsf");
@@ -401,7 +401,9 @@ if(pc==0x272) {
                         this.setB(srl(this.getB()));
                         break;
                     }
-
+                    case "87":{
+                        this.setA(~(1<<0) & this.getA() & 0xFF);
+                    }
                 }
                 this.setPc(this.getPc()+instructionToExec.getByteLength());
                 break;
@@ -481,7 +483,7 @@ if(pc==0x272) {
                 String operand1 = instructionToExec.getOperand1();
                 if(!operand1.equals("d8")) {
                     if (operand1.equals("A"))
-                        this.setA((byte) (this.getA() & this.getA()));
+                        this.setA((this.getA() & this.getA()) & 0xFF);
                     else if (operand1.equals("B"))
                         this.setA((byte) (this.getB() & this.getA()));
                     else if (operand1.equals("C"))
@@ -993,15 +995,42 @@ if(pc==0x272) {
             }
             case "JP":
             {
-                if(instructionToExec.getOperand1().equals("(HL)"))
+                if(instructionToExec.getOpCode().equals("E9"))
                 {
                     this.setPc(this.getHL());
                 }
-                else {
+                if(instructionToExec.getOpCode().equals("C3"))
+                {
                     int upperBits = memUnit.loadData(pc + 2);
                     int lowBits = memUnit.loadData(pc + 1);
                     int address = (upperBits<<8)|lowBits;
                     this.setPc(address);
+                }
+                if(instructionToExec.getOpCode().equals("CA"))
+                {
+                    if (this.getZF() == 1) {
+                        int upperBits = memUnit.loadData(pc + 2);
+                        int lowBits = memUnit.loadData(pc + 1);
+                        int address = (upperBits<<8)|lowBits;
+                        this.setPc(address);
+
+                    } else if (this.getZF() == 0) {
+                        this.setPc(this.getPc() + instructionToExec.getByteLength());
+                        instructionToExec.setCycles(8);
+                    }
+                }
+                if(instructionToExec.getOpCode().equals("C2"))
+                {
+                    if (this.getZF() == 0) {
+                        int upperBits = memUnit.loadData(pc + 2);
+                        int lowBits = memUnit.loadData(pc + 1);
+                        int address = (upperBits<<8)|lowBits;
+                        this.setPc(address);
+
+                    } else if (this.getZF() == 1) {
+                        this.setPc(this.getPc() + instructionToExec.getByteLength());
+                        instructionToExec.setCycles(8);
+                    }
                 }
                 break;
             }
@@ -1019,7 +1048,7 @@ if(pc==0x272) {
             }
             case "CPL":
             {
-                this.setA((byte) (0xFF ^ this.getA()));
+                this.setA((0xFF ^ this.getA()) & 0xFF);
                 this.setPc(this.getPc()+instructionToExec.getByteLength());
                 this.setNF(1);
                 this.setHF(1);

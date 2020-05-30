@@ -21,8 +21,12 @@ public class MemoryUnit {
                 /* flush the output buffer */
 
             } }
-    if(address==0xd81d)
-    System.out.print("edw");
+    if(address==0xFF80 && b==0xff) {
+        mainMem[address]=0;
+        System.out.print("edw");
+    }
+    if(address==0xFF46)
+        System.out.println("DMADMADMA");
     }
 
     public int loadData(int address){ return mainMem[address]; }

@@ -16,7 +16,7 @@ public class GuiPanel extends JPanel {
                 getDefaultConfiguration();
         img = gfxConfig.createCompatibleImage(160, 144);
         rgb = new int[160*144];
-        pallette = new int[]{0xFFFFFF,0x000000,0x000000,0x000000,};
+        pallette = new int[]{0x9bbc0f,0x306230,0x8bac0f,0x0F380f};
 
     }
 
