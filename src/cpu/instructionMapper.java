@@ -129,7 +129,7 @@ public class instructionMapper {
 
         instructionsMap[15].setDescription("RRCA");
         instructionsMap[15].setOpCode("0F");
-        instructionsMap[11].setCycles(1);
+        instructionsMap[15].setByteLength(1);
         instructionsMap[15].setCycles(4);
 
         instructionsMap[16].setDescription("STOP");
@@ -1056,47 +1056,64 @@ public class instructionMapper {
         instructionsMap[151].setDescription("SUB");
         instructionsMap[151].setOpCode("97");
         instructionsMap[151].setOperand1("A");
-
+        instructionsMap[151].setByteLength(1);
+        instructionsMap[151].setCycles(4);
 
         instructionsMap[152].setDescription("SBC");
         instructionsMap[152].setOpCode("98");
         instructionsMap[152].setOperand1("A");
         instructionsMap[152].setOperand2("B");
+        instructionsMap[152].setByteLength(1);
+        instructionsMap[152].setCycles(4);
 
         instructionsMap[153].setDescription("SBC");
         instructionsMap[153].setOpCode("99");
         instructionsMap[153].setOperand1("A");
         instructionsMap[153].setOperand2("C");
+        instructionsMap[153].setByteLength(1);
+        instructionsMap[153].setCycles(4);
 
         instructionsMap[154].setDescription("SBC");
         instructionsMap[154].setOpCode("9A");
         instructionsMap[154].setOperand1("A");
         instructionsMap[154].setOperand2("D");
+        instructionsMap[154].setByteLength(1);
+        instructionsMap[154].setCycles(4);
 
         instructionsMap[155].setDescription("SBC");
         instructionsMap[155].setOpCode("9B");
         instructionsMap[155].setOperand1("A");
         instructionsMap[155].setOperand2("E");
+        instructionsMap[155].setByteLength(1);
+        instructionsMap[155].setCycles(4);
 
         instructionsMap[156].setDescription("SBC");
         instructionsMap[156].setOpCode("9C");
         instructionsMap[156].setOperand1("A");
         instructionsMap[156].setOperand2("H");
+        instructionsMap[156].setByteLength(1);
+        instructionsMap[156].setCycles(4);
 
         instructionsMap[157].setDescription("SBC");
         instructionsMap[157].setOpCode("9D");
         instructionsMap[157].setOperand1("A");
         instructionsMap[157].setOperand2("L");
+        instructionsMap[157].setByteLength(1);
+        instructionsMap[157].setCycles(4);
 
         instructionsMap[158].setDescription("SBC");
         instructionsMap[158].setOpCode("9E");
         instructionsMap[158].setOperand1("A");
         instructionsMap[158].setOperand2("(HL)");
+        instructionsMap[158].setByteLength(1);
+        instructionsMap[158].setCycles(8);
 
         instructionsMap[159].setDescription("SBC");
         instructionsMap[159].setOpCode("9F");
         instructionsMap[159].setOperand1("A");
         instructionsMap[159].setOperand2("A");
+        instructionsMap[159].setByteLength(1);
+        instructionsMap[159].setCycles(4);
 
         instructionsMap[160].setDescription("AND");
         instructionsMap[160].setOpCode("A0");
@@ -1258,21 +1275,25 @@ public class instructionMapper {
         instructionsMap[186].setOpCode("BA");
         instructionsMap[186].setOperand1("D");
         instructionsMap[186].setByteLength(1);
+        instructionsMap[186].setCycles(4);
 
         instructionsMap[187].setDescription("CP");
         instructionsMap[187].setOpCode("BB");
         instructionsMap[187].setOperand1("E");
         instructionsMap[187].setByteLength(1);
+        instructionsMap[187].setCycles(4);
 
         instructionsMap[188].setDescription("CP");
         instructionsMap[188].setOpCode("BC");
         instructionsMap[188].setOperand1("H");
         instructionsMap[188].setByteLength(1);
+        instructionsMap[188].setCycles(4);
 
         instructionsMap[189].setDescription("CP");
         instructionsMap[189].setOpCode("BD");
         instructionsMap[189].setOperand1("L");
         instructionsMap[189].setByteLength(1);
+        instructionsMap[190].setCycles(4);
 
         instructionsMap[190].setDescription("CP");
         instructionsMap[190].setOpCode("BE");
@@ -1335,6 +1356,7 @@ public class instructionMapper {
         instructionsMap[199].setOpCode("C7");
         instructionsMap[199].setOperand1("00");
         instructionsMap[199].setByteLength(1);
+        instructionsMap[199].setCycles(16);
 
         instructionsMap[200].setDescription("RET");
         instructionsMap[200].setOpCode("C8");
@@ -1365,6 +1387,7 @@ public class instructionMapper {
         instructionsMap[204].setOperand1("Z");
         instructionsMap[204].setOperand2("a16");
         instructionsMap[204].setByteLength(3);
+        instructionsMap[204].setCycles(24);
 
         instructionsMap[205].setDescription("CALL");
         instructionsMap[205].setOpCode("CD");
@@ -1383,6 +1406,7 @@ public class instructionMapper {
         instructionsMap[207].setOpCode("CF");
         instructionsMap[207].setOperand1("08");
         instructionsMap[207].setByteLength(1);
+        instructionsMap[207].setCycles(16);
 
         instructionsMap[208].setDescription("RET");
         instructionsMap[208].setOpCode("D0");
@@ -1401,6 +1425,7 @@ public class instructionMapper {
         instructionsMap[210].setOperand1("NC");
         instructionsMap[210].setOperand2("a16");
         instructionsMap[210].setByteLength(3);
+        instructionsMap[210].setCycles(16);
 
         instructionsMap[211].setDescription("");
         instructionsMap[211].setOpCode("D3");
@@ -1429,6 +1454,7 @@ public class instructionMapper {
         instructionsMap[215].setOpCode("D7");
         instructionsMap[215].setOperand1("10");
         instructionsMap[215].setByteLength(1);
+        instructionsMap[215].setCycles(16);
 
         instructionsMap[216].setDescription("RET");
         instructionsMap[216].setOpCode("D8");
@@ -1446,6 +1472,7 @@ public class instructionMapper {
         instructionsMap[218].setOperand1("C");
         instructionsMap[218].setOperand2("a16");
         instructionsMap[218].setByteLength(3);
+        instructionsMap[218].setCycles(16);
 
         instructionsMap[219].setDescription("");
         instructionsMap[219].setOpCode("DB");
@@ -1455,6 +1482,7 @@ public class instructionMapper {
         instructionsMap[220].setOperand1("C");
         instructionsMap[220].setOperand2("a16");
         instructionsMap[220].setByteLength(3);
+        instructionsMap[220].setCycles(24);
 
         instructionsMap[221].setDescription("");
         instructionsMap[221].setOpCode("DD");
@@ -1464,11 +1492,13 @@ public class instructionMapper {
         instructionsMap[222].setOperand1("A");
         instructionsMap[222].setOperand2("d8");
         instructionsMap[222].setByteLength(2);
+        instructionsMap[222].setCycles(8);
 
         instructionsMap[223].setDescription("RST");
         instructionsMap[223].setOpCode("DF");
         instructionsMap[223].setOperand1("18");
         instructionsMap[223].setByteLength(1);
+        instructionsMap[223].setCycles(16);
 
         instructionsMap[224].setDescription("LD");
         instructionsMap[224].setOpCode("E0");
@@ -1512,12 +1542,14 @@ public class instructionMapper {
         instructionsMap[231].setOpCode("E7");
         instructionsMap[231].setOperand1("20");
         instructionsMap[231].setByteLength(1);
+        instructionsMap[231].setCycles(16);
 
         instructionsMap[232].setDescription("ADD");
         instructionsMap[232].setOpCode("E8");
         instructionsMap[232].setOperand1("SP");
         instructionsMap[232].setOperand2("r8");
         instructionsMap[232].setByteLength(2);
+        instructionsMap[232].setCycles(16);
 
         instructionsMap[233].setDescription("JP");
         instructionsMap[233].setOpCode("E9");
@@ -1573,6 +1605,7 @@ public class instructionMapper {
         instructionsMap[242].setOperand1("A");
         instructionsMap[242].setOperand2("(C)");
         instructionsMap[242].setByteLength(2);
+        instructionsMap[242].setCycles(8);
 
         instructionsMap[243].setDescription("DI");
         instructionsMap[243].setOpCode("F3");
@@ -1592,11 +1625,13 @@ public class instructionMapper {
         instructionsMap[246].setOpCode("F6");
         instructionsMap[246].setOperand1("d8");
         instructionsMap[246].setByteLength(2);
+        instructionsMap[246].setCycles(8);
 
         instructionsMap[247].setDescription("RST");
         instructionsMap[247].setOpCode("F7");
         instructionsMap[247].setOperand1("30");
         instructionsMap[247].setByteLength(1);
+        instructionsMap[247].setCycles(16);
 
         instructionsMap[248].setDescription("LD");
         instructionsMap[248].setOpCode("F8");
@@ -1610,6 +1645,7 @@ public class instructionMapper {
         instructionsMap[249].setOperand1("SP");
         instructionsMap[249].setOperand2("HL");
         instructionsMap[249].setByteLength(1);
+        instructionsMap[249].setCycles(8);
 
         instructionsMap[250].setDescription("LD");
         instructionsMap[250].setOpCode("FA");
@@ -1642,8 +1678,6 @@ public class instructionMapper {
         instructionsMap[255].setOperand1("38");
         instructionsMap[255].setByteLength(1);
         instructionsMap[255].setCycles(16);
-
-
-
+        
     }
 }
