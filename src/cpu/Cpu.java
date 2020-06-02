@@ -3,6 +3,7 @@ package cpu;
 import interrupts.InterruptManager;
 import mmu.MemoryUnit;
 
+import java.io.*;
 import java.nio.ByteBuffer;
 
 public class Cpu {
@@ -196,10 +197,12 @@ public class Cpu {
         return position;
     }
 
-    public void executeInstruction(Instruction instructionToExec, Integer pc)
-    {
+    public void executeInstruction(Instruction instructionToExec, Integer pc) {
+        try {
+            dumpInfoToFile(instructionToExec, pc);
+        }catch(IOException e){}
         System.out.println(instructionToExec.getDescription()+":"+String.format("%02X",pc));
-if(pc==0xc7f0) {
+if(pc==0xC7B2) {
 
     int fromMem = memUnit.loadData(65346);
     System.out.println("addsdfsfsf");
@@ -645,7 +648,14 @@ switch(instructionToExec.getOpCode())
         break;
     }
     case "3F":{
-
+        this.setNF(0);
+        this.setHF(0);
+        if(this.getCF()==1)
+            this.setCF(0);
+        else
+            this.setCF(1);
+        this.setPc(this.getPc()+instructionToExec.getByteLength());
+        break;
     }
     case "40":{
         loadRegToReg(instructionToExec);
@@ -1451,7 +1461,10 @@ switch(instructionToExec.getOpCode())
         break;
     }
     case "CE":{
-
+        int value = memUnit.loadData(pc + 1);
+        adcRegisterWithRegisterA(value);
+        this.setPc(this.getPc() + instructionToExec.getByteLength());
+        break;
     }
     case "CF":{
         int addressToJump = Integer.parseInt(instructionToExec.getOperand1(),16);
@@ -1868,6 +1881,42 @@ switch(instructionToExec.getOpCode())
         return shiftedReg;
     }
 
+    public int rlc(int registerValue)
+    {
+        int result = (registerValue << 1) & 0xff;
+        if ((registerValue & (1<<7)) != 0) {
+            result |= 1;
+            this.setCF(1);
+        } else {
+            this.setCF(0);
+        }
+
+        if(result == 0)
+            this.setZF(1);
+        else
+            this.setZF(0);
+        this.setNF(0);
+        this.setHF(0);
+        return result;
+    }
+
+    public int rrc(int registerValue)
+    {
+        int result = registerValue >> 1;
+        if ((registerValue & 1) == 1) {
+            result |= (1 << 7);
+            this.setCF(1);
+        } else {
+            this.setCF(0);
+        }
+        if(result == 0)
+            this.setZF(1);
+        else
+            this.setZF(0);
+        this.setNF(0);
+        this.setHF(0);
+        return result;
+    }
     public int swap(int registerValue)
     {
         if(registerValue == 0)
@@ -2113,47 +2162,212 @@ switch(instructionToExec.getOpCode())
 
     public void prefix(Instruction instructionToExec)
     {
-        int operand = memUnit.loadData(pc+1);
-        String hexPrefixCode = String.format("%02X",operand);
-        switch(hexPrefixCode)
+        int opcode = memUnit.loadData(pc+1);
+        String hexPrefixCode = String.format("%02X",opcode);
+        if(opcode>=0x00 && opcode<=0x07)
         {
-            case "7C":
-            {
-                if((this.getH()>>7)==0b00000001)
-                    this.setZF(0);
-                else if((this.getH()>>7)==0b00000000)
-                    this.setZF(1);
+            int position = prefixSecondOperand(opcode%8);
 
-                this.setNF(0);
-                this.setHF(1);
-                break;
+            if(opcode==0x06)
+            {
+                int rotatedValue = rlc(memUnit.loadData(this.getHL()));
+                memUnit.writeData(this.getHL(),rotatedValue);
             }
-            case "11": {
-                this.setC(rl(this.getC()));
-                break;
-            }
-            case "19":{
-                this.setC(rr(this.getC()));
-                break;
-            }
-            case "1A":{
-                this.setD(rr(this.getD()));
-                break;
-            }
-            case "37":{
-                this.setA(swap(this.getA()));
-                break;
-            }
-            case "38":{
-                this.setB(srl(this.getB()));
-                break;
-            }
-            case "87":{
-                this.setA(~(1<<0) & this.getA() & 0xFF);
+            else {
+                registers[position] = rlc(registers[position]);
             }
         }
+        if(opcode>=0x08 && opcode<=0x0f)
+        {
+            int position = prefixSecondOperand(opcode%8);
+
+            if(opcode==0x0E)
+            {
+                int rotatedValue = rrc(memUnit.loadData(this.getHL()));
+                memUnit.writeData(this.getHL(),rotatedValue);
+            }
+            else {
+                registers[position] = rrc(registers[position]);
+            }
+        }
+
+        if(opcode>=0x10 && opcode<=0x17)
+        {
+            int position = prefixSecondOperand(opcode%8);
+
+            if(opcode==0x16)
+            {
+                int rotatedValue = rl(memUnit.loadData(this.getHL()));
+                memUnit.writeData(this.getHL(),rotatedValue);
+            }
+            else {
+                registers[position] = rl(registers[position]);
+            }
+        }
+        if(opcode>=0x18 && opcode<=0x1F)
+        {
+            int position = prefixSecondOperand(opcode%8);
+
+            if(opcode==0x1E)
+            {
+                int rotatedValue = rr(memUnit.loadData(getHL()));
+                memUnit.writeData(this.getHL(),rotatedValue);
+            }
+            else {
+                registers[position] = rr(registers[position]);
+            }
+        }
+        if(opcode>=0x20 && opcode<=0x27)
+        {
+            int position = prefixSecondOperand(opcode%8);
+
+            if(opcode==0x26)
+            {
+                int shiftedValue = sla(memUnit.loadData(getHL()));
+                memUnit.writeData(this.getHL(),shiftedValue);
+            }
+            else {
+                registers[position] = sla(registers[position]);
+            }
+        }
+        if(opcode>=0x28 && opcode<=0x2f)
+        {
+            int position = prefixSecondOperand(opcode%8);
+
+            if(opcode==0x2E)
+            {
+                int shiftedValue = sra(memUnit.loadData(this.getHL()));
+                memUnit.writeData(this.getHL(),shiftedValue);
+            }
+            else {
+                registers[position] = sra(registers[position]);
+            }
+        }
+        if(opcode>=0x30 && opcode<=0x37)
+        {
+            int position = prefixSecondOperand(opcode%8);
+
+            if(opcode==0x36)
+            {
+                int swappedValue = swap(memUnit.loadData(this.getHL()));
+                memUnit.writeData(this.getHL(),swappedValue);
+            }
+            else {
+                registers[position] = swap(registers[position]);
+            }
+        }
+        if(opcode>=0x38 && opcode<=0x3f)
+        {
+            int position = prefixSecondOperand(opcode%8);
+
+            if(opcode==0x3E)
+            {
+                int rotatedValue = srl(this.getHL());
+                memUnit.writeData(this.getHL(),rotatedValue);
+            }
+            else {
+                registers[position] = srl(registers[position]);
+            }
+        }
+        if(opcode>=0x40 && opcode<=0x7f)
+        {
+            if(opcode==0x46||opcode==0x56||opcode==0x66||opcode==0x76||opcode==0x4E||opcode==0x5E||opcode==0x6E||opcode==0x7E) {
+                int position = (opcode - 0x40) / 8;
+                prefixBIT(position, memUnit.loadData(this.getHL()));
+            }
+            else{
+                int position = (opcode - 0x40) / 8;
+                int regPos = prefixSecondOperand(opcode % 8);
+                prefixBIT(position, registers[regPos]);
+            }
+
+        }
+        if(opcode>=0x80 && opcode<=0xbf)
+        {
+            int position = prefixSecondOperand(opcode%8);
+            int firstOperand = (opcode-0x80)/8;
+            if(opcode==0x86||opcode==0x96||opcode==0xA6||opcode==0xB6||opcode==0x8E||opcode==0x9E||opcode==0xAE||opcode==0xBE)
+            {
+                int resettedValue = (~(1<<firstOperand) & memUnit.loadData(this.getHL()) & 0xFF);
+                memUnit.writeData(this.getHL(),resettedValue);
+            }
+            else {
+                registers[position] = (~(1<<firstOperand) & registers[position] & 0xFF);
+            }
+
+        }
+        if(opcode>=0xC0 && opcode<=0xFF)
+        {
+            int position = prefixSecondOperand(opcode%8);
+            int firstOperand = (opcode-0xC0)/8;
+
+            if(opcode==0xC6||opcode==0xD6||opcode==0xE6||opcode==0xF6||opcode==0xCE||opcode==0xDE||opcode==0xEE||opcode==0xFE)
+            {
+                int settedValue = ((1<<firstOperand)|(memUnit.loadData(this.getHL()))) & 0xFF;
+                memUnit.writeData(this.getHL(),settedValue);
+            }
+            else {
+                registers[position] = ((1<<firstOperand)|(registers[position])) & 0xFF;
+            }
+
+        }
+
     }
 
+    public void prefixBIT(int firstOperand, int secondOperand)
+    {
+        if((secondOperand & (1<<firstOperand))!=0)
+            this.setZF(0);
+        else if((secondOperand & (1<<firstOperand))==0)
+            this.setZF(1);
+
+        this.setNF(0);
+        this.setHF(1);
+    }
+
+    public void prefixRES(int firstOperand,int secondOperand)
+    {
+        registers[secondOperand] = (~(1<<firstOperand) & registers[secondOperand] & 0xFF);
+    }
+
+    public void prefixSET(int firstOperand,int secondOperand)
+    {
+
+    }
+
+    public int sla(int registerValue)
+    {
+        int result = (registerValue << 1) & 0xff;
+        if((registerValue & (1<<7)) != 0)
+            this.setCF(1);
+        else
+            this.setCF(0);
+        if(result==0)
+            this.setZF(1);
+        else
+            this.setZF(0);
+
+        this.setNF(0);
+        this.setHF(0);
+        return result;
+    }
+
+    public int sra(int registerValue)
+    {
+        int result = (registerValue >> 1) | (registerValue & (1 << 7));;
+        if((registerValue & (1<<7)) != 0)
+            this.setCF(1);
+        else
+            this.setCF(0);
+        if(result==0)
+            this.setZF(1);
+        else
+            this.setZF(0);
+
+        this.setNF(0);
+        this.setHF(0);
+        return result;
+    }
     public void checkAndHandleInterrupts()
     {
         if(interruptManager.getIME() == 1) {
@@ -2163,6 +2377,26 @@ switch(instructionToExec.getOpCode())
                 this.setPc(0x40);
             }
         }
+    }
+
+    public int prefixSecondOperand(int position)
+    {
+        if(position == 0x7)
+        {
+            return 0;
+        }
+        return position+1;
+    }
+
+    public void dumpInfoToFile(Instruction instructionToExec, Integer pc) throws IOException
+    {
+        String value = instructionToExec.getDescription()+":"+String.format("%02X",pc);
+        value += " A:"+String.format("%02X",this.getA())+" B:"+String.format("%02X",this.getB())+" C:"+String.format("%02X",this.getC())+" D:"+String.format("%02X",this.getD())+" E:"+String.format("%02X",this.getE())+" H:"+String.format("%02X",this.getH())+" L:"+String.format("%02X",this.getL());
+        BufferedWriter writer = new BufferedWriter(new FileWriter("/home/dimitris/gbemu.txt",true));
+        writer.append("\n");
+        writer.append(value);
+
+        writer.close();
     }
 }
 

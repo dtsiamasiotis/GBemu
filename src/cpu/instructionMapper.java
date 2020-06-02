@@ -1293,7 +1293,7 @@ public class instructionMapper {
         instructionsMap[189].setOpCode("BD");
         instructionsMap[189].setOperand1("L");
         instructionsMap[189].setByteLength(1);
-        instructionsMap[190].setCycles(4);
+        instructionsMap[189].setCycles(4);
 
         instructionsMap[190].setDescription("CP");
         instructionsMap[190].setOpCode("BE");
@@ -1678,6 +1678,6 @@ public class instructionMapper {
         instructionsMap[255].setOperand1("38");
         instructionsMap[255].setByteLength(1);
         instructionsMap[255].setCycles(16);
-        
+
     }
 }
