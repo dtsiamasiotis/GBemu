@@ -4,6 +4,7 @@ import cpu.Cpu;
 import cpu.disassembler;
 import gpu.Gpu;
 import gui.Gui;
+import interrupts.InterruptManager;
 import mmu.MemoryUnit;
 import ppu.Fetcher;
 import ppu.Pixel;
@@ -19,9 +20,12 @@ public class Main {
         Fetcher pixelFetcher = new Fetcher();
         Gpu gpu = new Gpu();
         Cpu cpu = new Cpu();
+        InterruptManager interruptManager = new InterruptManager();
+        interruptManager.setMemoryUnit(memoryUnit);
+        cpu.setInterruptManager(interruptManager);
         disassembler reader = new disassembler();
-        int bootrom[] = reader.readBootRom();
-        memoryUnit.writeBootRom(bootrom);
+        //int bootrom[] = reader.readBootRom();
+        //memoryUnit.writeBootRom(bootrom);
         int data[] = reader.readFile();
         for(int i=0x100; i<data.length; i++)
             memoryUnit.writeData(i, data[i] & 0xFF);

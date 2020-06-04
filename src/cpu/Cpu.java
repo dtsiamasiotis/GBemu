@@ -68,6 +68,8 @@ public class Cpu {
        // byte[] tmpBytes = new byte[2];
         //tmpBytes[0] = this.getH();
         //tmpBytes[1] = l;
+        if(l>0xff)
+            System.out.println("asfdd");
         registers[6] = l;
 
         //this.setHL(tmpBytes);
@@ -204,7 +206,7 @@ public class Cpu {
             dumpInfoToFile(instructionToExec, pc);
         }catch(IOException e){}
         //System.out.println(instructionToExec.getDescription()+":"+String.format("%02X",pc));
-if(pc==0xC7B2) {
+if(pc==0xc6ba) {
 
     int fromMem = memUnit.loadData(65346);
     System.out.println("addsdfsfsf");
@@ -251,14 +253,14 @@ switch(instructionToExec.getOpCode())
         break;
     }
     case "07":{
-        byte result = (byte) ((this.getA() << 1) & 0xff);
+        int result = (this.getA() << 1) & 0xff;
         if ((this.getA() & (1<<7)) != 0) {
             result |= 1;
             this.setCF(1);
         } else {
             this.setCF(0);
         }
-        this.setZF(result == 0?1:0);
+        this.setZF(0);
         this.setNF(0);
         this.setHF(0);
         this.setA(result);
@@ -310,6 +312,7 @@ switch(instructionToExec.getOpCode())
     }
     case "0F":{
         this.setA(rrc(this.getA()));
+        this.setZF(0);
         this.setPc(this.getPc()+instructionToExec.getByteLength());
         break;
     }
@@ -353,14 +356,8 @@ switch(instructionToExec.getOpCode())
         break;
     }
     case "17":{
-        byte rotatedA = (byte)((this.getA()<<1)|this.getCF());
-        if(((byte)(this.getA())&(1<<7))==0)
-            this.setCF(0);
-        else
-            this.setCF(1);
-
-        this.setZF(rotatedA == 0?1:0);
-        this.setA(rotatedA);
+        this.setA(rl(this.getA()));
+        this.setZF(0);
         this.setPc(this.getPc()+instructionToExec.getByteLength());
         break;
     }
@@ -588,7 +585,7 @@ switch(instructionToExec.getOpCode())
         break;
     }
     case "33":{
-        memUnit.setSp((memUnit.getSp()+1) & 0xFFFF);
+        memUnit.setSp((memUnit.getSp() + 1) & 0xFFFF);
         this.setPc(this.getPc()+instructionToExec.getByteLength());
         break;
     }
@@ -630,7 +627,8 @@ switch(instructionToExec.getOpCode())
     }
     case "36":{
         int address = this.getHL();
-        memUnit.writeData(address, memUnit.loadData(pc+1));
+        int data = memUnit.loadData(pc+1);
+        memUnit.writeData(address, data);
         this.setPc(this.getPc()+instructionToExec.getByteLength());
         break;
     }
@@ -668,7 +666,7 @@ switch(instructionToExec.getOpCode())
         break;
     }
     case "3B":{
-        int value = memUnit.getSp() - 1;
+        int value = (memUnit.getSp() - 1) & 0xFFFF;
         memUnit.setSp(value);
         this.setPc(this.getPc()+instructionToExec.getByteLength());
         break;
@@ -1694,10 +1692,7 @@ switch(instructionToExec.getOpCode())
     case "E8":{
         int r8 = memUnit.loadData(pc+1);
         int result = (memUnit.getSp() + r8) & 0xFFFF;
-        if (result == 0)
-            this.setZF(1);
-        else
-            this.setZF(0);
+        this.setZF(0);
         if ((((memUnit.getSp() & 0x0F) + (r8 & 0x0F)) & 0x10) !=0)
             this.setHF(1);
         else
@@ -1708,7 +1703,7 @@ switch(instructionToExec.getOpCode())
             this.setCF(0);
 
         this.setNF(0);
-        memUnit.setSp(result & 0xFFFF);
+        memUnit.setSp(result);
         this.setPc(this.getPc()+instructionToExec.getByteLength());
         break;
     }
@@ -1794,10 +1789,7 @@ switch(instructionToExec.getOpCode())
     case "F8":{
         int r8 = memUnit.loadData(pc+1);
         int result = (memUnit.getSp() + r8) & 0xFFFF;
-        if (result == 0)
-            this.setZF(1);
-        else
-            this.setZF(0);
+        this.setZF(0);
         if ((((memUnit.getSp() & 0x0F) + (r8 & 0x0F)) & 0x10) !=0)
             this.setHF(1);
         else
@@ -1824,7 +1816,6 @@ switch(instructionToExec.getOpCode())
         int address = (upperBits<<8)|lowBits;
         int fromMem = memUnit.loadData(address);
         this.setA(fromMem);
-        memUnit.writeData(address,this.getA());
         this.setPc(this.getPc()+instructionToExec.getByteLength());
         break;
     }
@@ -2014,7 +2005,7 @@ switch(instructionToExec.getOpCode())
     {
         int position = findCorrectRegisterFromName(instructionToExec.getOperand1());
         int value = (registers[position] + 1) & 0xFF;
-        if((registers[position] & 0x0F) == 0)
+        if((registers[position] & 0x0F) == 0x0F)
             this.setHF(1);
         else
             this.setHF(0);
@@ -2047,8 +2038,6 @@ switch(instructionToExec.getOpCode())
         int HLoperand = this.getHL();
         int sum = HLoperand + secondOperand;
 
-        this.setH((sum>>8) & 0xFF);
-        this.setL(sum & 0xFF);
         this.setNF(0);
         if(sum>0xffff)
             this.setCF(1);
@@ -2058,6 +2047,10 @@ switch(instructionToExec.getOpCode())
             this.setHF(1);
         else
             this.setHF(0);
+
+        sum = sum & 0xFFFF;
+        this.setH((sum>>8) & 0xFF);
+        this.setL(sum & 0xFF);
     }
 
     public void loadRegToReg(Instruction instructionToExec)

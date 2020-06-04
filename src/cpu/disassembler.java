@@ -65,7 +65,7 @@ public class disassembler {
     }
 
     public int[] readFile() throws IOException {
-       // File f = new File("/home/dimitris/10-bit ops.gb");
+        //File f = new File("/home/dimitris/06-ld r,r.gb");
         File f = new File("/home/dimitris/tetris.gb");
         long len = f.length();
 

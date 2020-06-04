@@ -92,7 +92,7 @@ public class Fetcher {
             case "READTILEID":
                 mapAddress = 0x9800 + ((((gpu.getLY()+getSCY())%256)/8)*32) + tileInRow;
                 curTileNumber = readTileNumber();
-                if(curTileNumber==0)
+                if(curTileNumber==99)
                     System.out.println("asfasfa");
                 tileInRow++;
                 timer++;

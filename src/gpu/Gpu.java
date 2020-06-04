@@ -112,7 +112,7 @@ public class Gpu {
 
         if(LY==144) {
             state = "VBLANK";
-            System.out.println("VBLANK");
+            //System.out.println("VBLANK");
             memoryUnit.writeData(0xFF0F,1);
             synchronized (this) {
                 gui.refresh();
@@ -165,7 +165,7 @@ public class Gpu {
         {
             Sprite sprite = new Sprite();
             sprite.setPositionY(memoryUnit.loadData(65024+i));
-            sprite.setPositionX(memoryUnit.loadData(65025+i));
+            sprite.setPositionX(memoryUnit.loadData(65025+i)-8);
             sprite.setSpriteNumber(memoryUnit.loadData(65026+i));
             if(sprite.getPositionX()!=0 && (LY + 16>=sprite.getPositionY()) && (LY + 16<sprite.getPositionY()+8))
                 visibleSprites.add(sprite);
