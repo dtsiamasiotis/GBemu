@@ -206,7 +206,7 @@ public class Cpu {
             dumpInfoToFile(instructionToExec, pc);
         }catch(IOException e){}
         System.out.println(instructionToExec.getDescription()+":"+String.format("%02X",pc)+","+instructionToExec.getOpCode());
-if(pc==0xc4c2||pc==0xdef8) {
+if(pc==0xdef8 && memUnit.getSp()==0xffff && instructionToExec.getOpCode().equals("39")) {
 
     int fromMem = memUnit.loadData(65346);
     System.out.println("addsdfsfsf");
@@ -1446,8 +1446,8 @@ switch(instructionToExec.getOpCode())
     }
     case "C7":{
         int addressToJump = Integer.parseInt(instructionToExec.getOperand1(),16);
+        memUnit.pushWordToStack(pc+curInstruction.getByteLength());
         this.setPc(addressToJump);
-        memUnit.pushToStack(pc+curInstruction.getByteLength());
         break;
     }
     case "C8":{
@@ -1508,8 +1508,8 @@ switch(instructionToExec.getOpCode())
     }
     case "CF":{
         int addressToJump = Integer.parseInt(instructionToExec.getOperand1(),16);
+        memUnit.pushWordToStack(pc+curInstruction.getByteLength());
         this.setPc(addressToJump);
-        memUnit.pushToStack(pc+curInstruction.getByteLength());
         break;
     }
     case "D0":{
@@ -1585,8 +1585,8 @@ switch(instructionToExec.getOpCode())
     }
     case "D7":{
         int addressToJump = Integer.parseInt(instructionToExec.getOperand1(),16);
+        memUnit.pushWordToStack(pc+curInstruction.getByteLength());
         this.setPc(addressToJump);
-        memUnit.pushToStack(pc+curInstruction.getByteLength());
         break;
     }
     case "D8":{
@@ -1833,8 +1833,8 @@ switch(instructionToExec.getOpCode())
     }
     case "FF":{
         int addressToJump = Integer.parseInt(instructionToExec.getOperand1(),16);
-        this.setPc(addressToJump);
         memUnit.pushWordToStack(pc+curInstruction.getByteLength());
+        this.setPc(addressToJump);
         break;
     }
 
@@ -2441,7 +2441,7 @@ switch(instructionToExec.getOpCode())
         if(interruptManager.getIME() == 1) {
             if ((interruptManager.getIE() & interruptManager.getIF() & 0x1) == 1) {
                 interruptManager.setIME(0);
-                memUnit.pushToStack(this.pc);
+                memUnit.pushWordToStack(this.pc);
                 this.setPc(0x40);
             }
         }
@@ -2458,7 +2458,7 @@ switch(instructionToExec.getOpCode())
 
     public void dumpInfoToFile(Instruction instructionToExec, Integer pc) throws IOException
     {
-        String value = instructionToExec.getDescription()+":"+String.format("%02X",pc);
+        String value = instructionToExec.getDescription()+":"+String.format("%02X",pc)+","+instructionToExec.getOpCode();
         value += " A:"+String.format("%02X",this.getA())+" B:"+String.format("%02X",this.getB())+" C:"+String.format("%02X",this.getC())+" D:"+String.format("%02X",this.getD())+" E:"+String.format("%02X",this.getE())+" H:"+String.format("%02X",this.getH())+" L:"+String.format("%02X",this.getL())+" ZF:"+this.getZF()+" NF:"+this.getNF()+" HF:"+this.getHF()+" CF:"+this.getCF();
         BufferedWriter writer = new BufferedWriter(new FileWriter("/home/dimitris/gbemu.txt",true));
         writer.append("\n");

@@ -108,6 +108,10 @@ public class MemoryUnit {
 
     public void pushWordToStack(int value)
     {
+        if(value==0xff26)
+        {
+            System.out.println("edw");
+        }
         pushByteToStack((value>>8) & 0xFF);
         pushByteToStack(value & 0xFF);
     }
