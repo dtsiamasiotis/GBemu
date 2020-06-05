@@ -889,7 +889,7 @@ public class instructionMapper {
         instructionsMap[126].setCycles(8);
 
         instructionsMap[127].setDescription("LD");
-        instructionsMap[127].setOpCode("7D");
+        instructionsMap[127].setOpCode("7F");
         instructionsMap[127].setOperand1("A");
         instructionsMap[127].setOperand2("A");
         instructionsMap[127].setByteLength(1);

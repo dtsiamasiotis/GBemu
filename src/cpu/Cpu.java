@@ -205,8 +205,8 @@ public class Cpu {
             if(pc!=0xcc62)
             dumpInfoToFile(instructionToExec, pc);
         }catch(IOException e){}
-        //System.out.println(instructionToExec.getDescription()+":"+String.format("%02X",pc));
-if(pc==0xc6ba) {
+        System.out.println(instructionToExec.getDescription()+":"+String.format("%02X",pc)+","+instructionToExec.getOpCode());
+if(pc==0xc4c2||pc==0xdef8) {
 
     int fromMem = memUnit.loadData(65346);
     System.out.println("addsdfsfsf");
@@ -998,7 +998,8 @@ switch(instructionToExec.getOpCode())
         break;
     }
     case "76":{
-
+        this.setPc(this.getPc()+instructionToExec.getByteLength());
+        break;
     }
     case "77":{
         int address = this.getHL();
@@ -1388,15 +1389,14 @@ switch(instructionToExec.getOpCode())
     }
     case "C0":{
         if(this.getZF()==0)
-            this.setPc(memUnit.popFromStack());
+            this.setPc(memUnit.popWordFromStack());
         else
             this.setPc(this.getPc()+instructionToExec.getByteLength());
         break;
     }
     case "C1":{
-        int fromStack = memUnit.popFromStack();
-        this.setB((fromStack>>8) & 0xFF);
-        this.setC(fromStack & 0xFF);
+        this.setC(memUnit.popByteFromStack());
+        this.setB(memUnit.popByteFromStack());
         this.setPc(this.getPc()+instructionToExec.getByteLength());
         break;
     }
@@ -1427,15 +1427,15 @@ switch(instructionToExec.getOpCode())
             int lowBits = memUnit.loadData(pc + 1);
             int address = (upperBits<<8)|lowBits;
             this.setPc(address);
-            memUnit.pushToStack(pc+3);
+            memUnit.pushWordToStack(pc+3);
         }else{
             this.setPc(this.getPc() + instructionToExec.getByteLength());
         }
         break;
     }
     case "C5":{
-        int value = this.getBC();
-        memUnit.pushToStack(value);
+        memUnit.pushByteToStack(this.getB());
+        memUnit.pushByteToStack(this.getC());
         this.setPc(this.getPc()+instructionToExec.getByteLength());
         break;
     }
@@ -1452,13 +1452,13 @@ switch(instructionToExec.getOpCode())
     }
     case "C8":{
         if(this.getZF()==1)
-            this.setPc(memUnit.popFromStack());
+            this.setPc(memUnit.popWordFromStack());
         else
             this.setPc(this.getPc()+instructionToExec.getByteLength());
         break;
     }
     case "C9":{
-        this.setPc(memUnit.popFromStack());
+        this.setPc(memUnit.popWordFromStack());
         break;
     }
     case "CA":{
@@ -1486,7 +1486,7 @@ switch(instructionToExec.getOpCode())
             int lowBits = memUnit.loadData(pc + 1);
             int address = (upperBits<<8)|lowBits;
             this.setPc(address);
-            memUnit.pushToStack(pc+3);
+            memUnit.pushWordToStack(pc+3);
         }else{
             this.setPc(this.getPc() + instructionToExec.getByteLength());
         }
@@ -1497,7 +1497,7 @@ switch(instructionToExec.getOpCode())
         int lowBits = memUnit.loadData(pc + 1);
         int address = (upperBits<<8)|lowBits;
         this.setPc(address);
-        memUnit.pushToStack(pc+3);
+        memUnit.pushWordToStack(pc+3);
         break;
     }
     case "CE":{
@@ -1514,15 +1514,14 @@ switch(instructionToExec.getOpCode())
     }
     case "D0":{
         if(this.getCF()==0)
-            this.setPc(memUnit.popFromStack());
+            this.setPc(memUnit.popWordFromStack());
         else
             this.setPc(this.getPc()+instructionToExec.getByteLength());
         break;
     }
     case "D1":{
-        int fromStack = memUnit.popFromStack();
-        this.setD((fromStack>>8) & 0xFF);
-        this.setE(fromStack & 0xFF);
+        this.setE(memUnit.popByteFromStack());
+        this.setD(memUnit.popByteFromStack());
         this.setPc(this.getPc()+instructionToExec.getByteLength());
         break;
     }
@@ -1549,15 +1548,15 @@ switch(instructionToExec.getOpCode())
             int lowBits = memUnit.loadData(pc + 1);
             int address = (upperBits<<8)|lowBits;
             this.setPc(address);
-            memUnit.pushToStack(pc+3);
+            memUnit.pushWordToStack(pc+3);
         }else{
             this.setPc(this.getPc() + instructionToExec.getByteLength());
         }
         break;
     }
     case "D5":{
-        int value = this.getDE();
-        memUnit.pushToStack(value);
+        memUnit.pushByteToStack(this.getD());
+        memUnit.pushByteToStack(this.getE());
         this.setPc(this.getPc()+instructionToExec.getByteLength());
         break;
     }
@@ -1592,14 +1591,14 @@ switch(instructionToExec.getOpCode())
     }
     case "D8":{
         if(this.getCF()==1)
-            this.setPc(memUnit.popFromStack());
+            this.setPc(memUnit.popWordFromStack());
         else
             this.setPc(this.getPc()+instructionToExec.getByteLength());
         break;
     }
     case "D9":{
         this.interruptManager.setIME(1);
-        this.setPc(memUnit.popFromStack());
+        this.setPc(memUnit.popWordFromStack());
         break;
     }
     case "DA":{
@@ -1625,7 +1624,7 @@ switch(instructionToExec.getOpCode())
             int lowBits = memUnit.loadData(pc + 1);
             int address = (upperBits<<8)|lowBits;
             this.setPc(address);
-            memUnit.pushToStack(pc+3);
+            memUnit.pushWordToStack(pc+3);
         }else{
             this.setPc(this.getPc() + instructionToExec.getByteLength());
         }
@@ -1642,7 +1641,7 @@ switch(instructionToExec.getOpCode())
     case "DF":{
         int addressToJump = Integer.parseInt(instructionToExec.getOperand1(),16);
         this.setPc(addressToJump);
-        memUnit.pushToStack(pc+curInstruction.getByteLength());
+        memUnit.pushWordToStack(pc+curInstruction.getByteLength());
         break;
     }
     case "E0":{
@@ -1653,9 +1652,8 @@ switch(instructionToExec.getOpCode())
         break;
     }
     case "E1":{
-        int fromStack = memUnit.popFromStack();
-        this.setH((fromStack>>8) & 0xFF);
-        this.setL(fromStack & 0xFF);
+        this.setL(memUnit.popByteFromStack());
+        this.setH(memUnit.popByteFromStack());
         this.setPc(this.getPc()+instructionToExec.getByteLength());
         break;
     }
@@ -1673,8 +1671,8 @@ switch(instructionToExec.getOpCode())
 
     }
     case "E5":{
-        int value = this.getHL();
-        memUnit.pushToStack(value);
+        memUnit.pushByteToStack(this.getH());
+        memUnit.pushByteToStack(this.getL());
         this.setPc(this.getPc()+instructionToExec.getByteLength());
         break;
     }
@@ -1686,7 +1684,7 @@ switch(instructionToExec.getOpCode())
     case "E7":{
         int addressToJump = Integer.parseInt(instructionToExec.getOperand1(),16);
         this.setPc(addressToJump);
-        memUnit.pushToStack(pc+curInstruction.getByteLength());
+        memUnit.pushWordToStack(pc+curInstruction.getByteLength());
         break;
     }
     case "E8":{
@@ -1736,7 +1734,7 @@ switch(instructionToExec.getOpCode())
     case "EF":{
         int addressToJump = Integer.parseInt(instructionToExec.getOperand1(),16);
         this.setPc(addressToJump);
-        memUnit.pushToStack(pc+curInstruction.getByteLength());
+        memUnit.pushWordToStack(pc+curInstruction.getByteLength());
         break;
     }
     case "F0":{
@@ -1747,10 +1745,8 @@ switch(instructionToExec.getOpCode())
         break;
     }
     case "F1":{
-        int fromStack = memUnit.popFromStack();
-        byte[] arr = ByteBuffer.allocate(4).putInt(fromStack).array();
-        this.setA((fromStack>>8) & 0xFF);
-        this.setFregister(fromStack & 0xFF);
+        this.setFregister(memUnit.popByteFromStack());
+        this.setA(memUnit.popByteFromStack());
         this.setPc(this.getPc()+instructionToExec.getByteLength());
         break;
     }
@@ -1770,8 +1766,8 @@ switch(instructionToExec.getOpCode())
 
     }
     case "F5":{
-        int value = ((this.getA()<<8) | constructFregister()) & 0xFFFF;
-        memUnit.pushToStack(value);
+        memUnit.pushByteToStack(this.getA());
+        memUnit.pushByteToStack(constructFregister());
         this.setPc(this.getPc()+instructionToExec.getByteLength());
         break;
     }
@@ -1783,7 +1779,7 @@ switch(instructionToExec.getOpCode())
     case "F7":{
         int addressToJump = Integer.parseInt(instructionToExec.getOperand1(),16);
         this.setPc(addressToJump);
-        memUnit.pushToStack(pc+curInstruction.getByteLength());
+        memUnit.pushWordToStack(pc+curInstruction.getByteLength());
         break;
     }
     case "F8":{
@@ -1838,7 +1834,7 @@ switch(instructionToExec.getOpCode())
     case "FF":{
         int addressToJump = Integer.parseInt(instructionToExec.getOperand1(),16);
         this.setPc(addressToJump);
-        memUnit.pushToStack(pc+curInstruction.getByteLength());
+        memUnit.pushWordToStack(pc+curInstruction.getByteLength());
         break;
     }
 

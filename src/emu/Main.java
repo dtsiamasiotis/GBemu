@@ -24,8 +24,8 @@ public class Main {
         interruptManager.setMemoryUnit(memoryUnit);
         cpu.setInterruptManager(interruptManager);
         disassembler reader = new disassembler();
-        //int bootrom[] = reader.readBootRom();
-        //memoryUnit.writeBootRom(bootrom);
+       // int bootrom[] = reader.readBootRom();
+       // memoryUnit.writeBootRom(bootrom);
         int data[] = reader.readFile();
         for(int i=0x100; i<data.length; i++)
             memoryUnit.writeData(i, data[i] & 0xFF);

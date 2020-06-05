@@ -5,7 +5,7 @@ import java.util.Stack;
 public class MemoryUnit {
     private Stack<Integer> stack= new Stack<Integer>();
     private int[] mainMem = new int[65536];
-    private int sp = 0;
+    private int sp = 0xFFFE;
 
     public void setSp(int stackPointer)
     {
@@ -24,13 +24,7 @@ public class MemoryUnit {
         }
         else
             mainMem[address]=b;
-    if(address >= 0xFF00 && address <= 0xFF7F){
-            if(address == 0xFF02 && b == 0x81){
-                /* "send" byte from 0xFF01 */
-                System.out.println((char) mainMem[0xFF01 - 0xFF00]);
-                /* flush the output buffer */
 
-            } }
     //TETRIS hack
     if(address==0xFF80 && b==0xff) {
        // mainMem[address]=0;
@@ -51,15 +45,19 @@ public class MemoryUnit {
         if(pc==0xdefb) {
             System.out.println("sdfrfgerge");
         }
-        stack.push(pc);
-        this.setSp(sp-2);
+        //stack.push(pc);
+        //this.setSp(sp-2);
+
+        writeData(sp,pc);
+        this.setSp(sp-1);
     }
 
     public Integer popFromStack()
     {
-        this.setSp(sp+2);
-        return stack.pop();
-
+        //this.setSp(sp+2);
+        //return stack.pop();
+          this.setSp(sp+1);
+          return loadData(sp);
     }
 
     public void writeBootRom(int data[])
@@ -93,5 +91,32 @@ public class MemoryUnit {
         {
             writeData(0xFE00+i, loadData(address+i));
         }
+    }
+
+    public void pushByteToStack(int value)
+    {
+        sp--;
+        mainMem[sp] = value & 0xFF;
+    }
+
+    public int popByteFromStack()
+    {
+        int value = mainMem[sp] & 0xFF;
+        sp++;
+        return value;
+    }
+
+    public void pushWordToStack(int value)
+    {
+        pushByteToStack((value>>8) & 0xFF);
+        pushByteToStack(value & 0xFF);
+    }
+
+    public int popWordFromStack()
+    {
+        int value1 = popByteFromStack();
+        int value2 = popByteFromStack();
+
+        return (value2<<8)|value1;
     }
 }
