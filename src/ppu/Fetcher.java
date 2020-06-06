@@ -23,6 +23,10 @@ public class Fetcher {
     private boolean enqueueSpriteFetching = false;
     private Sprite spriteToShow;
 
+    public int getLCDControlRegister()
+    {
+        return memoryUnit.loadData(0xFF40);
+    }
 
     public int readTileNumber()
     {
@@ -30,19 +34,50 @@ public class Fetcher {
         return tileNumber;
     }
 
+    public int findTileDataSetAddress()
+    {
+        int lcdControlRegister = getLCDControlRegister();
+
+        if((lcdControlRegister & 0x10) == 0)
+            return 0x9000;
+        else
+            return 0x8000;
+    }
+
+    public boolean isSignedTileId()
+    {
+        return ((getLCDControlRegister() & 0x10) == 0);
+    }
+
+    public int idToSigned(int value)
+    {
+        if((value & (1<<7)) == 0)
+            return value;
+        else
+            return value - 0x100;
+    }
+
     public int readData0(int tileNumber)
     {
-        int tileNumberInt = (tileNumber & 0xFF);
+        int tileNumberInt = 0;
+        if(isSignedTileId())
+            tileNumberInt = idToSigned(tileNumber);
+        else
+            tileNumberInt = (tileNumber & 0xFF);
         int tileLine = ((gpu.getLY()+getSCY())%256)%8;
-        int tileNumberAddress = 0x8000 + (tileNumberInt * 2 * 8) + (tileLine * 2);
+        int tileNumberAddress = findTileDataSetAddress() + (tileNumberInt * 2 * 8) + (tileLine * 2);
         return memoryUnit.loadData(tileNumberAddress);
     }
 
     public int readData1(int tileNumber)
     {
-        int tileNumberInt = (tileNumber & 0xFF);
+        int tileNumberInt = 0;
+        if(isSignedTileId())
+            tileNumberInt = idToSigned(tileNumber);
+        else
+            tileNumberInt = (tileNumber & 0xFF);
         int tileLine = ((gpu.getLY()+getSCY())%256)%8;
-        int tileNumberAddress = 0x8000 + (tileNumberInt * 2 * 8) + (tileLine * 2) + 1;
+        int tileNumberAddress = findTileDataSetAddress() + (tileNumberInt * 2 * 8) + (tileLine * 2) + 1;
         return memoryUnit.loadData(tileNumberAddress);
     }
 
@@ -66,6 +101,7 @@ public class Fetcher {
 
     public void setMemoryUnit(MemoryUnit memoryUnit){
         this.memoryUnit = memoryUnit;
+        memoryUnit.writeData(0xFF40,0x91);
     }
 
     public Pixel createAPixel(int data0,int data1,int bitPos)
@@ -92,8 +128,8 @@ public class Fetcher {
             case "READTILEID":
                 mapAddress = 0x9800 + ((((gpu.getLY()+getSCY())%256)/8)*32) + tileInRow;
                 curTileNumber = readTileNumber();
-                //if(curTileNumber==99)
-                    //System.out.println("asfasfa");
+                if(curTileNumber==0xa3)
+                    System.out.println("asfasfa");
                 tileInRow++;
                 timer++;
                 state = "READTILEDATA0";

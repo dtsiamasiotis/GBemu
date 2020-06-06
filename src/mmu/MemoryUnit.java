@@ -1,11 +1,18 @@
 package mmu;
 
+import joypad.Joypad;
+
 import java.util.Stack;
 
 public class MemoryUnit {
     private Stack<Integer> stack= new Stack<Integer>();
     private int[] mainMem = new int[65536];
     private int sp = 0xFFFE;
+    private Joypad joypad;
+
+    public void setJoypad(Joypad joypad) {
+        this.joypad = joypad;
+    }
 
     public void setSp(int stackPointer)
     {
@@ -17,6 +24,11 @@ public class MemoryUnit {
     }
 
     public void writeData(int address, int b){
+        if(address==0xFF46) {
+            DMATransfer(b);
+            return;
+        }
+
         if(b>0xFF)
         {
             mainMem[address] = b & 0xFF;
@@ -26,19 +38,23 @@ public class MemoryUnit {
             mainMem[address]=b;
 
     //TETRIS hack
-    if(address==0xFF80 && b==0xff) {
-       // mainMem[address]=0;
+    if((address==0xFF80||address==0xFF81) && b==0xff) {
+       mainMem[address]=0;
      //   System.out.print("edw");
     }
-    if(b>0xff)
-    {
-       System.out.println("sdfrfgerge");
-    }
-    if(address==0xFF46)
-        DMATransfer(b);
+
+    if(address==0xFF00)
+        joypad.setTemp(b);
     }
 
-    public int loadData(int address){ return mainMem[address]; }
+    public int loadData(int address){
+        if(address == 0xFF00)
+        {
+            return joypad.getJoypadRegister();
+        }
+        else
+            return mainMem[address];
+    }
 
     public void pushToStack(Integer pc)
     {
@@ -89,7 +105,7 @@ public class MemoryUnit {
         int address = data << 8;
         for(int i = 0; i<0xA0; i++)
         {
-            writeData(0xFE00+i, loadData(address+i));
+            mainMem[0xFE00+i] = loadData(address+i);
         }
     }
 

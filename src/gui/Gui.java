@@ -1,11 +1,15 @@
 package gui;
 
+import joypad.Joypad;
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 
 public class Gui extends JPanel {
     private GuiPanel guiPanel;
+    private Joypad joypad;
     public Gui()
     {
         guiPanel = new GuiPanel();
@@ -21,7 +25,9 @@ public class Gui extends JPanel {
                 SwingUtilities.isEventDispatchThread());
         JFrame f = new JFrame("Swing Paint Demo");
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+        Keylistener joypadListener = new Keylistener();
+        joypadListener.setJoypad(this.joypad);
+        f.addKeyListener(joypadListener);
         f.add(guiPanel);
         f.pack();
         f.setVisible(true);
@@ -35,5 +41,9 @@ public class Gui extends JPanel {
     public void refresh()
     {
         guiPanel.refresh();
+    }
+
+    public void setJoypad(Joypad joypad) {
+        this.joypad = joypad;
     }
 }

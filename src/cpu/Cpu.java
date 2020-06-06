@@ -205,8 +205,8 @@ public class Cpu {
             if(pc!=0xcc62)
             dumpInfoToFile(instructionToExec, pc);
         }catch(IOException e){}
-        System.out.println(instructionToExec.getDescription()+":"+String.format("%02X",pc)+","+instructionToExec.getOpCode());
-if(pc==0xdef8 && memUnit.getSp()==0xffff && instructionToExec.getOpCode().equals("39")) {
+     //   System.out.println(instructionToExec.getDescription()+":"+String.format("%02X",pc)+","+instructionToExec.getOpCode());
+if(pc==0x4a7) {
 
     int fromMem = memUnit.loadData(65346);
     System.out.println("addsdfsfsf");
@@ -2443,6 +2443,11 @@ switch(instructionToExec.getOpCode())
                 interruptManager.setIME(0);
                 memUnit.pushWordToStack(this.pc);
                 this.setPc(0x40);
+            }
+            if ((interruptManager.getIE() & interruptManager.getIF() & 0x4) >= 4) {
+                interruptManager.setIME(0);
+                memUnit.pushWordToStack(this.pc);
+                this.setPc(0x60);
             }
         }
     }

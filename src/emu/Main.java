@@ -5,6 +5,7 @@ import cpu.disassembler;
 import gpu.Gpu;
 import gui.Gui;
 import interrupts.InterruptManager;
+import joypad.Joypad;
 import mmu.MemoryUnit;
 import ppu.Fetcher;
 import ppu.Pixel;
@@ -36,6 +37,10 @@ public class Main {
         cpu.setMemUnit(memoryUnit);
         pixelFetcher.setGpu(gpu);
         gpu.setFetcher(pixelFetcher);
+        Joypad joypad = new Joypad();
+        gui.setJoypad(joypad);
+        memoryUnit.setJoypad(joypad);
+        joypad.setMemoryUnit(memoryUnit);
 
         pixelFetcher.setMapAddress(38912);
         //BIOS SETUP
@@ -50,7 +55,7 @@ public class Main {
 
 
         //for(int i=0;i<20000;i++)
-        //cpu.setPc(0x100);
+        cpu.setPc(0x100);
         //memoryUnit.setSp(0xFFFE);
         while(true)
         {
