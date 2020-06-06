@@ -39,6 +39,7 @@ public class Main {
         gpu.setFetcher(pixelFetcher);
         Joypad joypad = new Joypad();
         gui.setJoypad(joypad);
+        gui.runGui();
         memoryUnit.setJoypad(joypad);
         joypad.setMemoryUnit(memoryUnit);
 

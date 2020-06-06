@@ -2444,7 +2444,7 @@ switch(instructionToExec.getOpCode())
                 memUnit.pushWordToStack(this.pc);
                 this.setPc(0x40);
             }
-            if ((interruptManager.getIE() & interruptManager.getIF() & 0x4) >= 4) {
+            if ((interruptManager.getIE() & interruptManager.getIF() & 0x10) == 0x10) {
                 interruptManager.setIME(0);
                 memUnit.pushWordToStack(this.pc);
                 this.setPc(0x60);

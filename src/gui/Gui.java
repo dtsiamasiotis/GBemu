@@ -13,11 +13,19 @@ public class Gui extends JPanel {
     public Gui()
     {
         guiPanel = new GuiPanel();
+       // SwingUtilities.invokeLater(new Runnable() {
+       //     public void run() {
+        //        createAndShowGUI();
+       //     }
+      //  });
+    }
+    public void runGui()
+    {
         SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                createAndShowGUI();
-            }
-        });
+                public void run() {
+                    createAndShowGUI();
+                 }
+              });
     }
 
     private void createAndShowGUI() {

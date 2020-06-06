@@ -20,8 +20,10 @@ public class Joypad {
         {
            buttons.add(10);
         }
+        if(keycode==39)
+            buttons.add(39);
 
-        memoryUnit.writeData(0xFF0F,0x4);
+        memoryUnit.writeData(0xFF0F,memoryUnit.loadData(0xFF0F)|(1<<4));
     }
 
     public void setTemp(int value)
@@ -36,8 +38,13 @@ public class Joypad {
         {
             if(button==10 && temp==0b00010000)
             {
-              result = temp & (0xFF & ~0x4);
+              result = result & (0xFF & ~0x4);
               found = true;
+            }
+            if(button==39 && temp==0b00100000)
+            {
+                result = result & (0xFF & ~0x1);
+                found = true;
             }
         }
         if(found)
