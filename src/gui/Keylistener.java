@@ -26,6 +26,6 @@ public class Keylistener implements KeyListener {
 
     @Override
     public void keyReleased(KeyEvent keyEvent) {
-
+        joypad.handleKeyRelease();
     }
 }

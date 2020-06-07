@@ -206,7 +206,7 @@ public class Cpu {
             dumpInfoToFile(instructionToExec, pc);
         }catch(IOException e){}
      //   System.out.println(instructionToExec.getDescription()+":"+String.format("%02X",pc)+","+instructionToExec.getOpCode());
-if(pc==0x4a7) {
+if(pc==0x3a0) {
 
     int fromMem = memUnit.loadData(65346);
     System.out.println("addsdfsfsf");

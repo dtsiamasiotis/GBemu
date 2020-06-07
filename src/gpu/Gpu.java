@@ -164,9 +164,11 @@ public class Gpu {
         for(int i=0;i<40;i++)
         {
             Sprite sprite = new Sprite();
-            sprite.setPositionY(memoryUnit.loadData(65024+i));
-            sprite.setPositionX(memoryUnit.loadData(65025+i)-8);
-            sprite.setSpriteNumber(memoryUnit.loadData(65026+i));
+            sprite.setPositionY(memoryUnit.loadData(65024+(i*4)));
+            sprite.setPositionX(memoryUnit.loadData(65025+(i*4))-8);
+            sprite.setSpriteNumber(memoryUnit.loadData(65026+(i*4)));
+            if(sprite.getSpriteNumber()==0xa)
+                System.out.println("sdffsfsdfs");
             if(sprite.getPositionX()!=0 && (LY + 16>=sprite.getPositionY()) && (LY + 16<sprite.getPositionY()+8))
                 visibleSprites.add(sprite);
         }

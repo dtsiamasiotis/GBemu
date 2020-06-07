@@ -39,7 +39,7 @@ public class MemoryUnit {
 
     //TETRIS hack
     if((address==0xFF80||address==0xFF81) && b==0xff) {
-       mainMem[address]=0;
+       mainMem[address]=b;
      //   System.out.print("edw");
     }
 
