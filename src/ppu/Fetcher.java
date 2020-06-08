@@ -128,8 +128,8 @@ public class Fetcher {
             case "READTILEID":
                 mapAddress = 0x9800 + ((((gpu.getLY()+getSCY())%256)/8)*32) + tileInRow;
                 curTileNumber = readTileNumber();
-                if(curTileNumber==0x10)
-                    System.out.println("asfasfa");
+             //   if(curTileNumber==0x10)
+                 //   System.out.println("asfasfa");
                 tileInRow++;
                 timer++;
                 state = "READTILEDATA0";

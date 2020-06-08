@@ -58,9 +58,25 @@ public class Main {
         //for(int i=0;i<20000;i++)
         cpu.setPc(0x100);
         //memoryUnit.setSp(0xFFFE);
+        int dividerCounter = 0;
         while(true)
         {
             //for(int i = 0; i<10; i++)
+            if(dividerCounter==255)
+            {
+               int[] memory = memoryUnit.getMainMem();
+
+               if(memory[0xFF04]>=255)
+                   memory[0xFF04] = 0;
+               else
+                   memory[0xFF04] = memory[0xFF04]+1;
+
+               memoryUnit.setMainMem(memory);
+               dividerCounter = 0;
+            }
+            else
+                dividerCounter++;
+
                 cpu.tick();
 
             if(gpu.getState().equals("HBLANK")) {

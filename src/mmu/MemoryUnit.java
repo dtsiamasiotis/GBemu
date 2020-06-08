@@ -10,6 +10,14 @@ public class MemoryUnit {
     private int sp = 0xFFFE;
     private Joypad joypad;
 
+    public int[] getMainMem() {
+        return mainMem;
+    }
+
+    public void setMainMem(int[] mainMem) {
+        this.mainMem = mainMem;
+    }
+
     public void setJoypad(Joypad joypad) {
         this.joypad = joypad;
     }
@@ -23,28 +31,33 @@ public class MemoryUnit {
         return sp;
     }
 
-    public void writeData(int address, int b){
-        if(address==0xFF46) {
+    public void writeData(int address, int b) {
+        if (address == 0xFF46) {
             DMATransfer(b);
             return;
         }
-
-        if(b>0xFF)
-        {
-            mainMem[address] = b & 0xFF;
-            mainMem[address+1] = (b>>8) & 0xFF;
+        if(address==0x2000) {
+            mainMem[address] = 0x20;
+            return;
         }
-        else
-            mainMem[address]=b;
 
-    //TETRIS hack
-    if((address==0xFF80||address==0xFF81) && b==0xff) {
-       mainMem[address]=b;
-     //   System.out.print("edw");
-    }
+        if (b > 0xFF) {
+            mainMem[address] = b & 0xFF;
+            mainMem[address + 1] = (b >> 8) & 0xFF;
+        } else
+            mainMem[address] = b;
 
-    if(address==0xFF00)
-        joypad.setTemp(b);
+        //TETRIS hack
+        if ((address == 0xFF80 || address == 0xFF81) && b == 0xff) {
+            mainMem[address] = b;
+            //   System.out.print("edw");
+        }
+        if (address == 0xFF04)
+            mainMem[address] = 0;
+
+        if (address == 0xFF00)
+            joypad.setTemp(b);
+
     }
 
     public int loadData(int address){
