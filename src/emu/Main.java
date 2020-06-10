@@ -25,9 +25,9 @@ public class Main {
         interruptManager.setMemoryUnit(memoryUnit);
         cpu.setInterruptManager(interruptManager);
         disassembler reader = new disassembler();
-        //int bootrom[] = reader.readBootRom();
-        //memoryUnit.writeBootRom(bootrom);
-        int data[] = reader.readFile();
+        int bootrom[] = reader.readBootRom(args[0]);
+        memoryUnit.writeBootRom(bootrom);
+        int data[] = reader.readFile(args[1]);
         for(int i=0x100; i<data.length; i++)
             memoryUnit.writeData(i, data[i] & 0xFF);
         gpu.setGui(gui);
@@ -56,7 +56,7 @@ public class Main {
 
 
         //for(int i=0;i<20000;i++)
-        cpu.setPc(0x100);
+        cpu.setPc(0x0);
         //memoryUnit.setSp(0xFFFE);
         int dividerCounter = 0;
         int k=0;

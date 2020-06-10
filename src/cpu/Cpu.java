@@ -205,12 +205,12 @@ public class Cpu {
             //if(pc!=0xcc62)
         //    dumpInfoToFile(instructionToExec, pc);
        // }catch(IOException e){}
-       System.out.println(instructionToExec.getDescription()+":"+String.format("%02X",pc)+","+instructionToExec.getOpCode());
-if(pc==0x1ff2) {
+      // System.out.println(instructionToExec.getDescription()+":"+String.format("%02X",pc)+","+instructionToExec.getOpCode());
+//if(pc==0x1ff2) {
 
-    int fromMem = memUnit.loadData(65346);
-    System.out.println("addsdfsfsf");
-}
+   // int fromMem = memUnit.loadData(65346);
+  //  System.out.println("addsdfsfsf");
+//}
 switch(instructionToExec.getOpCode())
 {
     case "00":{

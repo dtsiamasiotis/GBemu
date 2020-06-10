@@ -48,9 +48,9 @@ public class disassembler {
         }*/
     }
 
-    public int[] readBootRom() throws IOException {
+    public int[] readBootRom(String bootromPath) throws IOException {
 
-        File f = new File("/home/dimitris/DMG_ROM.bin");
+        File f = new File(bootromPath);
         long len = f.length();
 
         System.out.println("Rom length:"+len);
@@ -64,9 +64,9 @@ public class disassembler {
         return dataAsInt;
     }
 
-    public int[] readFile() throws IOException {
+    public int[] readFile(String romPath) throws IOException {
         //File f = new File("/home/dimitris/06-ld r,r.gb");
-        File f = new File("/home/dimitris/Dr.Mario.gb");
+        File f = new File(romPath);
         long len = f.length();
 
         System.out.println("Rom length:"+len);

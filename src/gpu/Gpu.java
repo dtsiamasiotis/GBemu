@@ -74,17 +74,17 @@ public class Gpu {
     //        return;
 
 
-        if(OAMtimer==80/4)
+        if(OAMtimer==80)
         {
             state = "PIXELTRANSFER";
             OAMtimer = 0;
         }
-        if(HBLANKtimer+(pixelTransferCycles/4)==376/4)
+        if(HBLANKtimer+(pixelTransferCycles)==376)
         {
             state = "OAMSEARCH";
             HBLANKtimer = 0;
         }
-        if(VBLANKtimer==4560/4)
+        if(VBLANKtimer==4560)
         {
             state = "OAMSEARCH";
             VBLANKtimer = 0;
@@ -98,7 +98,7 @@ public class Gpu {
         }
         if(state.equals("VBLANK"))
         {
-            if(VBLANKtimer%(456/4)==0) {
+            if(VBLANKtimer%(456)==0) {
                 increaseLY();
             }
 
@@ -137,7 +137,7 @@ public class Gpu {
 
         if(state.equals("OAMSEARCH"))
         {
-            if(OAMtimer==79/4)
+            if(OAMtimer==79)
                 handleOAMSearch();
 
             OAMtimer++;
@@ -173,8 +173,7 @@ public class Gpu {
             sprite.setPositionY(memoryUnit.loadData(65024+(i*4)));
             sprite.setPositionX(memoryUnit.loadData(65025+(i*4))-8);
             sprite.setSpriteNumber(memoryUnit.loadData(65026+(i*4)));
-            if(sprite.getSpriteNumber()==0xa)
-                System.out.println("sdffsfsdfs");
+
             if(sprite.getPositionX()!=0 && (LY + 16>=sprite.getPositionY()) && (LY + 16<sprite.getPositionY()+8))
                 visibleSprites.add(sprite);
         }

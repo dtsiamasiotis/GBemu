@@ -20,7 +20,6 @@ public class Keylistener implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent keyEvent) {
-        System.out.println("key pressed"+keyEvent.getKeyCode());
         joypad.handleKeyPress(keyEvent.getKeyCode());
     }
 
