@@ -37,12 +37,12 @@ public class Joypad {
         for(Integer button:buttons)
         {
 
-            if(button==10 && temp==0b00010000) //SELECT
+            if(button==16 && temp==0b00010000) //SELECT
             {
               result = result & (0xFF & ~0x4);
               found = true;
             }
-            if(button==16 && temp==0b00010000) //START
+            if(button==10 && temp==0b00010000) //START
             {
                 result = result & (0xFF & ~0x8);
                 found = true;

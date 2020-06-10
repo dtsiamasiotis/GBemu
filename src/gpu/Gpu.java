@@ -22,7 +22,7 @@ public class Gpu {
     private int OAMtimer = 0;
     private ArrayList<Sprite> visibleSprites=new ArrayList<>();
     private Fetcher fetcher;
-
+    private int pixelTransferCycles = 0;
 
     public void increaseLY()
     {
@@ -70,17 +70,21 @@ public class Gpu {
 
     public void tick()
     {
-        if(OAMtimer==80)
+  //      if(!LCDisON())
+    //        return;
+
+
+        if(OAMtimer==80/4)
         {
             state = "PIXELTRANSFER";
             OAMtimer = 0;
         }
-        if(HBLANKtimer==204)
+        if(HBLANKtimer+(pixelTransferCycles/4)==376/4)
         {
             state = "OAMSEARCH";
             HBLANKtimer = 0;
         }
-        if(VBLANKtimer==4560)
+        if(VBLANKtimer==4560/4)
         {
             state = "OAMSEARCH";
             VBLANKtimer = 0;
@@ -94,8 +98,9 @@ public class Gpu {
         }
         if(state.equals("VBLANK"))
         {
-            if(VBLANKtimer%456==0)
+            if(VBLANKtimer%(456/4)==0) {
                 increaseLY();
+            }
 
             VBLANKtimer++;
             return;
@@ -122,6 +127,7 @@ public class Gpu {
         if(x==160) {
             x = 0;
             increaseLY();
+            pixelTransferCycles = timer;
             timer = 0;
             state = "HBLANK";
            // synchronized (this) {
@@ -131,7 +137,7 @@ public class Gpu {
 
         if(state.equals("OAMSEARCH"))
         {
-            if(OAMtimer==79)
+            if(OAMtimer==79/4)
                 handleOAMSearch();
 
             OAMtimer++;
@@ -184,6 +190,15 @@ public class Gpu {
         }
 
         return null;
+    }
+
+    public boolean LCDisON()
+    {
+        int lcdRegister = memoryUnit.loadData(0xFF40);
+        if((lcdRegister & 0x1) == 0x1)
+            return true;
+        else
+            return false;
     }
 
 }

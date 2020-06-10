@@ -201,10 +201,10 @@ public class Cpu {
     }
 
     public void executeInstruction(Instruction instructionToExec, Integer pc) {
-        try {
-            if(pc!=0xcc62)
-            dumpInfoToFile(instructionToExec, pc);
-        }catch(IOException e){}
+        //try {
+            //if(pc!=0xcc62)
+        //    dumpInfoToFile(instructionToExec, pc);
+       // }catch(IOException e){}
        System.out.println(instructionToExec.getDescription()+":"+String.format("%02X",pc)+","+instructionToExec.getOpCode());
 if(pc==0x1ff2) {
 
@@ -502,13 +502,20 @@ switch(instructionToExec.getOpCode())
         break;
     }
     case "28":{
+        if(finalStageOfInstr) {
+            this.setPc(this.getPc() + (byte) memUnit.loadData(pc + 1) + instructionToExec.getByteLength());
+            instrCompleted = true;
+            moreCycles = 0;
+            finalStageOfInstr = false;
+            break;
+        }
         if (this.getZF() == 1) {
-            this.setPc(this.getPc() + (byte)memUnit.loadData(pc+1) + instructionToExec.getByteLength());
-            instructionToExec.setCycles(12);
-
+            moreCycles = 4;
+            finalStageOfInstr = true;
+            break;
         } else if (this.getZF() == 0) {
             this.setPc(this.getPc() + instructionToExec.getByteLength());
-            instructionToExec.setCycles(8);
+            instrCompleted = true;
         }
         break;
     }
@@ -1856,7 +1863,7 @@ switch(instructionToExec.getOpCode())
 
         }
         if(curInstruction!=null)
-            if(timer==curInstruction.getCycles() + moreCycles) {
+            if(timer==((curInstruction.getCycles() + moreCycles))) {
                 executeInstruction(curInstruction, pc);
                 if(instrCompleted) {
                     timer = 0;

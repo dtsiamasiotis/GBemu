@@ -101,7 +101,7 @@ public class Fetcher {
 
     public void setMemoryUnit(MemoryUnit memoryUnit){
         this.memoryUnit = memoryUnit;
-        memoryUnit.writeData(0xFF40,0x91);
+      //  memoryUnit.writeData(0xFF40,0x91);
     }
 
     public Pixel createAPixel(int data0,int data1,int bitPos)

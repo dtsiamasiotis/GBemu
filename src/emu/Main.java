@@ -25,8 +25,8 @@ public class Main {
         interruptManager.setMemoryUnit(memoryUnit);
         cpu.setInterruptManager(interruptManager);
         disassembler reader = new disassembler();
-       // int bootrom[] = reader.readBootRom();
-       // memoryUnit.writeBootRom(bootrom);
+        //int bootrom[] = reader.readBootRom();
+        //memoryUnit.writeBootRom(bootrom);
         int data[] = reader.readFile();
         for(int i=0x100; i<data.length; i++)
             memoryUnit.writeData(i, data[i] & 0xFF);
@@ -59,6 +59,7 @@ public class Main {
         cpu.setPc(0x100);
         //memoryUnit.setSp(0xFFFE);
         int dividerCounter = 0;
+        int k=0;
         while(true)
         {
             //for(int i = 0; i<10; i++)
@@ -77,19 +78,21 @@ public class Main {
             else
                 dividerCounter++;
 
-                cpu.tick();
+            if(k==100)
+                k=0;
 
+
+            cpu.tick();
+            gpu.tick();
             if(gpu.getState().equals("HBLANK")) {
                 pixelFetcher.getPixelFIFO().dropAll();
                 pixelFetcher.setState("READTILEID");
                 pixelFetcher.resetTileInRow();
             }
-            if(gpu.getState().equals("PIXELTRANSFER"))
+            if(gpu.getState().equals("PIXELTRANSFER") && k%2==0)
                 pixelFetcher.tick();
-            gpu.tick();
-            gpu.tick();
-            //gpu.tick();
-           // gpu.tick();
+
+            k++;
 
             if(cpu.getPc() == 0x100)
             {

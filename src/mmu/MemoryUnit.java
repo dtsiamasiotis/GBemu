@@ -58,6 +58,9 @@ public class MemoryUnit {
         if (address == 0xFF00)
             joypad.setTemp(b);
 
+        //if(address == 0xFF40)
+            //System.out.print("edw");
+
     }
 
     public int loadData(int address){

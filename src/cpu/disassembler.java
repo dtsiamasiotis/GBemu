@@ -65,8 +65,8 @@ public class disassembler {
     }
 
     public int[] readFile() throws IOException {
-        //File f = new File("/home/dimitris/ld_hl_sp_e_timing.gb");
-        File f = new File("/home/dimitris/tetris.gb");
+        //File f = new File("/home/dimitris/06-ld r,r.gb");
+        File f = new File("/home/dimitris/Dr.Mario.gb");
         long len = f.length();
 
         System.out.println("Rom length:"+len);

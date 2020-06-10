@@ -290,7 +290,7 @@ public class instructionMapper {
         instructionsMap[40].setOperand1("Z");
         instructionsMap[40].setOperand2("r8");
         instructionsMap[40].setByteLength(2);
-        instructionsMap[40].setCycles(12);
+        instructionsMap[40].setCycles(8);
 
         instructionsMap[41].setDescription("ADD");
         instructionsMap[41].setOpCode("29");
