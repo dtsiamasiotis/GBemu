@@ -128,9 +128,6 @@ public class Fetcher {
             case "READTILEID":
                 mapAddress = 0x9800 + ((((gpu.getLY()+getSCY())%256)/8)*32) + tileInRow;
                 curTileNumber = readTileNumber();
-             //   if(curTileNumber==0x10)
-                 //   System.out.println("asfasfa");
-                tileInRow++;
                 timer++;
                 state = "READTILEDATA0";
                 break;
@@ -145,7 +142,7 @@ public class Fetcher {
                 {
                     Pixel pixel = createAPixel(data0,data1,i+1);
                     pixel.setType("BG");
-
+                    pixel.setId(curTileNumber);
                     tempPixels[7-i] = pixel;
 
                 }
@@ -170,7 +167,7 @@ public class Fetcher {
                 {
                     Pixel pixel = createAPixel(data0,data1,i+1);
                     pixel.setType("S0");
-
+                    pixel.setId(spriteToShow.getSpriteNumber());
                     tempPixels[7-i] = pixel;
 
                 }
@@ -192,9 +189,11 @@ public class Fetcher {
                             }
                         }
                     }
+                    tileInRow++;
                 }
                     //if(isFetchingSprite)
                         startFetchingBg();
+
                 }
                 timer = 0;
 

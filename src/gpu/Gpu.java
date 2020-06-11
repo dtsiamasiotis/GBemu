@@ -48,6 +48,8 @@ public class Gpu {
 
     public void setPixelFIFO(PixelFIFO pixelFIFO){ this.pixelFIFO = pixelFIFO; }
 
+    public int getX() { return x; }
+
     public void scanLine()
     {
         Pixel pixel = pixelFIFO.removeFromFifo();
@@ -63,6 +65,7 @@ public class Gpu {
             finally {
             //    System.out.println("LY:"+LY+"x:"+x+","+position);
             }
+            
             x++;
 
         }
