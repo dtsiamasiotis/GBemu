@@ -203,13 +203,13 @@ public class Cpu {
     public void executeInstruction(Instruction instructionToExec, Integer pc) {
         //try {
             //if(pc!=0xcc62)
-        //    dumpInfoToFile(instructionToExec, pc);
-       // }catch(IOException e){}
-      // System.out.println(instructionToExec.getDescription()+":"+String.format("%02X",pc)+","+instructionToExec.getOpCode());
-//if(pc==0x1ff2) {
+         //   dumpInfoToFile(instructionToExec, pc);
+        //}catch(IOException e){}
+    //   System.out.println(instructionToExec.getDescription()+":"+String.format("%02X",pc)+","+instructionToExec.getOpCode());
+//if(pc==0x1b) {
 
    // int fromMem = memUnit.loadData(65346);
-  //  System.out.println("addsdfsfsf");
+    //System.out.println("addsdfsfsf");
 //}
 switch(instructionToExec.getOpCode())
 {
@@ -2448,14 +2448,23 @@ switch(instructionToExec.getOpCode())
         if(interruptManager.getIME() == 1) {
             if ((interruptManager.getIE() & interruptManager.getIF() & 0x1) == 1) {
                 interruptManager.setIME(0);
+                memUnit.writeData(0xFF0F,memUnit.loadData(0xFF0F) & 0b11111110);
                 memUnit.pushWordToStack(this.pc);
                 this.setPc(0x40);
             }
+            if ((interruptManager.getIE() & interruptManager.getIF() & 0x4) == 0x4) {
+                interruptManager.setIME(0);
+                memUnit.writeData(0xFF0F,memUnit.loadData(0xFF0F) & 0b11111011);
+                memUnit.pushWordToStack(this.pc);
+                this.setPc(0x50);
+            }
             if ((interruptManager.getIE() & interruptManager.getIF() & 0x10) == 0x10) {
                 interruptManager.setIME(0);
+                memUnit.writeData(0xFF0F,memUnit.loadData(0xFF0F) & 0b11101111);
                 memUnit.pushWordToStack(this.pc);
                 this.setPc(0x60);
             }
+
         }
     }
 
@@ -2471,7 +2480,7 @@ switch(instructionToExec.getOpCode())
     public void dumpInfoToFile(Instruction instructionToExec, Integer pc) throws IOException
     {
         String value = instructionToExec.getDescription()+":"+String.format("%02X",pc)+","+instructionToExec.getOpCode();
-        value += " A:"+String.format("%02X",this.getA())+" B:"+String.format("%02X",this.getB())+" C:"+String.format("%02X",this.getC())+" D:"+String.format("%02X",this.getD())+" E:"+String.format("%02X",this.getE())+" H:"+String.format("%02X",this.getH())+" L:"+String.format("%02X",this.getL())+" ZF:"+this.getZF()+" NF:"+this.getNF()+" HF:"+this.getHF()+" CF:"+this.getCF();
+        value += " A:"+String.format("%02X",this.getA())+" B:"+String.format("%02X",this.getB())+" C:"+String.format("%02X",this.getC())+" D:"+String.format("%02X",this.getD())+" E:"+String.format("%02X",this.getE())+" H:"+String.format("%02X",this.getH())+" L:"+String.format("%02X",this.getL())+" ZF:"+this.getZF()+" NF:"+this.getNF()+" HF:"+this.getHF()+" CF:"+this.getCF()+" SP:"+String.format("%02X",memUnit.getSp());
         BufferedWriter writer = new BufferedWriter(new FileWriter("/home/dimitris/gbemu.txt",true));
         writer.append("\n");
         writer.append(value);

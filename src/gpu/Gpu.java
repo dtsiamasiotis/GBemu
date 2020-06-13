@@ -176,6 +176,7 @@ public class Gpu {
             sprite.setPositionY(memoryUnit.loadData(65024+(i*4)));
             sprite.setPositionX(memoryUnit.loadData(65025+(i*4))-8);
             sprite.setSpriteNumber(memoryUnit.loadData(65026+(i*4)));
+            sprite.setOptions(memoryUnit.loadData(65027+(i*4)));
 
             if(sprite.getPositionX()!=0 && (LY + 16>=sprite.getPositionY()) && (LY + 16<sprite.getPositionY()+8))
                 visibleSprites.add(sprite);

@@ -175,9 +175,19 @@ public class Fetcher {
                 break;
             case "PUSHPIXELS":
                 if(isFetchingSprite) {
-                    for (int j = 0; j < 8; j++) {
-                        if (tempPixels[j] != null) {
-                            pixelFIFO.mixPixel(j, tempPixels[j]);
+                    if(!spriteToShow.isXFlipped()) {
+                        for (int j = 0; j < 8; j++) {
+                            if (tempPixels[j] != null) {
+                                pixelFIFO.mixPixel(j, tempPixels[j],spriteToShow.isOnTopOfBackground());
+                            }
+                        }
+                    }
+                    else
+                    {
+                        for (int j = 7; j >= 0; j--) {
+                            if (tempPixels[j] != null) {
+                                pixelFIFO.mixPixel(7-j, tempPixels[j],spriteToShow.isOnTopOfBackground());
+                            }
                         }
                     }
                 }

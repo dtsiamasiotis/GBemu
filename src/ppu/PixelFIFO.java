@@ -43,9 +43,9 @@ public class PixelFIFO {
         this.canRemovePixel = canRemovePixel;
     }
 
-    public void mixPixel(int position,Pixel newPixel)
+    public void mixPixel(int position,Pixel newPixel,boolean isOnTop)
     {
-        if(newPixel.getBothBits()!=0) {
+        if((newPixel.getBothBits()!=0) && (isOnTop||fifo.get(position).getBothBits()==0)) {
             fifo.remove(position);
             fifo.add(position,newPixel);
         }

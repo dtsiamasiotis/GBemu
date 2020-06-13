@@ -9,6 +9,7 @@ public class Sprite {
     private boolean flipY;
     private int palette;
     private boolean alreadyShown = false;
+    private int options;
 
     public void setFlipX(boolean flipX) {
         this.flipX = flipX;
@@ -30,6 +31,8 @@ public class Sprite {
         this.positionY = positionY;
     }
 
+    public void setOptions(int options) { this.options = options; }
+
     public int getPositionX() {
         return positionX;
     }
@@ -48,5 +51,19 @@ public class Sprite {
 
     public int getSpriteNumber() {
         return spriteNumber;
+    }
+
+    public boolean isXFlipped() {
+        if((options & (1<<5)) == 0x20)
+            return true;
+        else
+            return false;
+    }
+
+    public boolean isOnTopOfBackground() {
+        if((options & (1<<7)) == 0x80)
+            return false;
+        else
+            return true;
     }
 }

@@ -9,6 +9,7 @@ import joypad.Joypad;
 import mmu.MemoryUnit;
 import ppu.Fetcher;
 import ppu.Pixel;
+import timer.Timer;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,6 +23,8 @@ public class Main {
         Gpu gpu = new Gpu();
         Cpu cpu = new Cpu();
         InterruptManager interruptManager = new InterruptManager();
+        Timer timer = new Timer();
+        timer.setMemoryUnit(memoryUnit);
         interruptManager.setMemoryUnit(memoryUnit);
         cpu.setInterruptManager(interruptManager);
         disassembler reader = new disassembler();
@@ -59,10 +62,19 @@ public class Main {
         cpu.setPc(0x0);
         //memoryUnit.setSp(0xFFFE);
         int dividerCounter = 0;
+        int timerCounter = 0;
         int k=0;
         while(true)
         {
             //for(int i = 0; i<10; i++)
+            if((timerCounter == timer.cyclesToIncreaseCounter()-1) && timer.isRunning()) {
+                timer.increaseCounter();
+                timerCounter = 0;
+            }
+
+            if(timer.isRunning())
+                timerCounter++;
+
             if(dividerCounter==255)
             {
                int[] memory = memoryUnit.getMainMem();
@@ -101,6 +113,10 @@ public class Main {
             }
         }
 
+
+
         //gui.refresh();
     }
+
+
 }
