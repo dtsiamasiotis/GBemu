@@ -6,9 +6,22 @@ import java.util.Stack;
 
 public class MemoryUnit {
     private Stack<Integer> stack= new Stack<Integer>();
-    private int[] mainMem = new int[65536];
+    private int[] mainMem;
     private int sp = 0xFFFE;
     private Joypad joypad;
+    private boolean MBC1 = false;
+    private int currentRomBank = 0;
+    private int bankRegister1 = 0;
+    private int bankRegister2 = 0;
+    private int mode = 0;
+
+    public MemoryUnit(int romSize)
+    {
+        if(romSize < 65536)
+            mainMem = new int[65536];
+        else
+            mainMem = new int[romSize];
+    }
 
     public int[] getMainMem() {
         return mainMem;
@@ -32,10 +45,32 @@ public class MemoryUnit {
     }
 
     public void writeData(int address, int b) {
+        if(address == 65523)
+            System.out.println("afdsdf");
+
         if (address == 0xFF46) {
             DMATransfer(b);
             return;
         }
+        if(address >= 0x2000 && address <= 0x3FFF && isMBC1())
+        {
+            if(b == 0)
+                bankRegister1 = 0x0;
+            else {
+                bankRegister1 = b & 0b00011111;
+            }
+            return;
+        }
+        if(address >= 0x4000 && address <= 0x5FFF && isMBC1())
+        {
+            bankRegister2 = b & 0b00000011;
+            return;
+        }
+        if(address >= 0x6000 && address <= 0x7FFF && isMBC1())
+        {
+            mode = b & 0b00000001;
+        }
+
         if(address==0x2000) {
             mainMem[address] = 0x20;
             return;
@@ -67,6 +102,15 @@ public class MemoryUnit {
         if(address == 0xFF00)
         {
             return joypad.getJoypadRegister();
+        }
+        if(address >=0x4000 && address <= 0x7FFF)
+        {
+            currentRomBank = findCurrentRomBank(address);
+            if(currentRomBank == 0)
+                currentRomBank++;
+
+            int finalAddress = (address-0x4000) + (currentRomBank * 0x4000);
+            return mainMem[finalAddress];
         }
         else
             return mainMem[address];
@@ -154,5 +198,32 @@ public class MemoryUnit {
         int value2 = popByteFromStack();
 
         return (value2<<8)|value1;
+    }
+
+    public boolean isMBC1() {
+        if(mainMem[0x0147] == 0x1)
+            return true;
+        else
+            return false;
+    }
+
+    public int findCurrentRomBank(int address)
+    {
+        int romBankNumber = 0;
+        if(address >= 0x0 && address <= 0x3FFF && mode==0)
+        {
+            return romBankNumber;
+        }
+        else if(address >= 0x0 && address <= 0x3FFF && mode==1)
+        {
+            return (bankRegister2 << 5);
+        }
+        else if (address >= 0x4000 && address <= 0x7FFF)
+        {
+            return (bankRegister2 << 5) | bankRegister1;
+        }
+
+        currentRomBank = romBankNumber;
+        return romBankNumber;
     }
 }

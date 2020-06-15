@@ -12,7 +12,7 @@ public class Cpu {
     private int Fregister;
     private int ZF,NF,HF,CF;
     private int pc;
-    private MemoryUnit memUnit = new MemoryUnit();
+    private MemoryUnit memUnit;// = new MemoryUnit();
     private int timer;
     private byte[] programToExecute;
     private instructionMapper mapOfInstructions =  new instructionMapper();
@@ -205,7 +205,7 @@ public class Cpu {
             //if(pc!=0xcc62)
         //    dumpInfoToFile(instructionToExec, pc);
        // }catch(IOException e){}
-      // System.out.println(instructionToExec.getDescription()+":"+String.format("%02X",pc)+","+instructionToExec.getOpCode());
+       System.out.println(instructionToExec.getDescription()+":"+String.format("%02X",pc)+","+instructionToExec.getOpCode());
 //if(pc==0x1ff2) {
 
    // int fromMem = memUnit.loadData(65346);
