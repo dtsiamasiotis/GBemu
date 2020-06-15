@@ -60,6 +60,13 @@ public class Sprite {
             return false;
     }
 
+    public boolean isYFlipped() {
+        if((options & (1<<6)) == 0x40)
+            return true;
+        else
+            return false;
+    }
+
     public boolean isOnTopOfBackground() {
         if((options & (1<<7)) == 0x80)
             return false;

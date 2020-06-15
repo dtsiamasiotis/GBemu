@@ -83,15 +83,33 @@ public class Fetcher {
 
     public int readSpriteData0(int spriteNumber)
     {
-        int spriteLine = gpu.getLY()+16 - spriteToShow.getPositionY();
-        int spriteNumberAddress = 0x8000 + (spriteNumber * 2 * 8) + (spriteLine * 2);
+        int spriteLine = 0;
+        int spriteNumberAddress = 0x8000;
+        if(spriteToShow.isYFlipped()) {
+            spriteLine = 7 - (gpu.getLY() + 16 - spriteToShow.getPositionY());
+            spriteNumberAddress = 0x8000 + (spriteNumber * 2 * 8) + (spriteLine * 2);
+        }
+        else
+        {
+            spriteLine = gpu.getLY() + 16 - spriteToShow.getPositionY();
+            spriteNumberAddress = 0x8000 + (spriteNumber * 2 * 8) + (spriteLine * 2);
+        }
         return memoryUnit.loadData(spriteNumberAddress);
     }
 
     public int readSpriteData1(int spriteNumber)
     {
-        int spriteLine = gpu.getLY()+16 - spriteToShow.getPositionY();
-        int spriteNumberAddress = 0x8000 + (spriteNumber * 2 * 8) + (spriteLine * 2) + 1;
+        int spriteLine = 0;
+        int spriteNumberAddress = 0x8000;
+        if(spriteToShow.isYFlipped()) {
+            spriteLine = 7 - (gpu.getLY() + 16 - spriteToShow.getPositionY());
+            spriteNumberAddress = 0x8000 + (spriteNumber * 2 * 8) + (spriteLine * 2) + 1;
+        }
+        else
+        {
+            spriteLine = gpu.getLY() + 16 - spriteToShow.getPositionY();
+            spriteNumberAddress = 0x8000 + (spriteNumber * 2 * 8) + (spriteLine * 2) + 1;
+        }
         return memoryUnit.loadData(spriteNumberAddress);
     }
 
