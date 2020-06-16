@@ -14,6 +14,7 @@ public class MemoryUnit {
     private int bankRegister1 = 0;
     private int bankRegister2 = 0;
     private int mode = 0;
+    private int[] cartridge;
 
     public MemoryUnit(int romSize)
     {
@@ -21,6 +22,11 @@ public class MemoryUnit {
             mainMem = new int[65536];
         else
             mainMem = new int[romSize];
+    }
+
+    public void setCartridge(int[] cartridgeRom)
+    {
+        this.cartridge = cartridgeRom;
     }
 
     public int[] getMainMem() {
@@ -45,8 +51,8 @@ public class MemoryUnit {
     }
 
     public void writeData(int address, int b) {
-        if(address == 65523)
-            System.out.println("afdsdf");
+        //if(address == 65523)
+            //System.out.println("afdsdf");
 
         if (address == 0xFF46) {
             DMATransfer(b);
@@ -110,7 +116,7 @@ public class MemoryUnit {
                 currentRomBank++;
 
             int finalAddress = (address-0x4000) + (currentRomBank * 0x4000);
-            return mainMem[finalAddress];
+            return cartridge[finalAddress];
         }
         else
             return mainMem[address];

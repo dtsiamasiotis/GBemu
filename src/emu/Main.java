@@ -30,6 +30,7 @@ public class Main {
         cpu.setInterruptManager(interruptManager);
 
         int bootrom[] = reader.readBootRom(args[0]);
+        memoryUnit.setCartridge(data);
        // memoryUnit.writeBootRom(bootrom);
         int memSize = data.length + bootrom.length;
         int tempMem[];
