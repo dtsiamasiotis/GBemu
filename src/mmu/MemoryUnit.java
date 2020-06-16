@@ -15,14 +15,15 @@ public class MemoryUnit {
     private int bankRegister2 = 0;
     private int mode = 0;
     private int[] cartridge;
+    private int[] bootRom;
 
-    public MemoryUnit(int romSize)
+   /* public MemoryUnit(int romSize)
     {
         if(romSize < 65536)
             mainMem = new int[65536];
         else
             mainMem = new int[romSize];
-    }
+    }*/
 
     public void setCartridge(int[] cartridgeRom)
     {
@@ -35,6 +36,10 @@ public class MemoryUnit {
 
     public void setMainMem(int[] mainMem) {
         this.mainMem = mainMem;
+    }
+
+    public void setBootrom(int[] bootRom) {
+        this.bootRom = bootRom;
     }
 
     public void setJoypad(Joypad joypad) {
@@ -54,6 +59,10 @@ public class MemoryUnit {
         //if(address == 65523)
             //System.out.println("afdsdf");
 
+        if(address==0xFF43)
+        {
+            System.out.println("scx:"+b);
+        }
         if (address == 0xFF46) {
             DMATransfer(b);
             return;
@@ -75,6 +84,7 @@ public class MemoryUnit {
         if(address >= 0x6000 && address <= 0x7FFF && isMBC1())
         {
             mode = b & 0b00000001;
+            return;
         }
 
         if(address==0x2000) {
@@ -89,10 +99,10 @@ public class MemoryUnit {
             mainMem[address] = b;
 
         //TETRIS hack
-        if ((address == 0xFF80 || address == 0xFF81) && b == 0xff) {
-            mainMem[address] = b;
+        //if ((address == 0xFF80 || address == 0xFF81) && b == 0xff) {
+          //  mainMem[address] = b;
             //   System.out.print("edw");
-        }
+        //}
         if (address == 0xFF04)
             mainMem[address] = 0;
 
@@ -109,6 +119,14 @@ public class MemoryUnit {
         {
             return joypad.getJoypadRegister();
         }
+        if(address >=0x0 && address <= 0xFF && mainMem[0xFF50] != 1)
+        {
+            return bootRom[address] & 0xFF;
+        }
+        if(address >=0x0 && address <= 0x3FFF)
+        {
+            return cartridge[address];
+        }
         if(address >=0x4000 && address <= 0x7FFF)
         {
             currentRomBank = findCurrentRomBank(address);
@@ -118,7 +136,7 @@ public class MemoryUnit {
             int finalAddress = (address-0x4000) + (currentRomBank * 0x4000);
             return cartridge[finalAddress];
         }
-        else
+        //else
             return mainMem[address];
     }
 
@@ -207,7 +225,7 @@ public class MemoryUnit {
     }
 
     public boolean isMBC1() {
-        if(mainMem[0x0147] == 0x1)
+        if(cartridge[0x0147] == 0x1)
             return true;
         else
             return false;

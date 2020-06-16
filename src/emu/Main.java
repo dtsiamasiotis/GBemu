@@ -19,8 +19,10 @@ public class Main {
     public static void main(String[] args) throws IOException {
         Gui gui = new Gui();
         disassembler reader = new disassembler();
-        int data[] = reader.readFile(args[1]);
-        MemoryUnit memoryUnit = new MemoryUnit(data.length);
+        int cartridge[] = reader.readFile(args[1]);
+        int mainMem[] = new int[65536];
+        MemoryUnit memoryUnit = new MemoryUnit();
+
         Fetcher pixelFetcher = new Fetcher();
         Gpu gpu = new Gpu();
         Cpu cpu = new Cpu();
@@ -33,9 +35,10 @@ public class Main {
         cpu.setInterruptManager(interruptManager);
 
         int bootrom[] = reader.readBootRom(args[0]);
-        memoryUnit.setCartridge(data);
+        memoryUnit.setBootrom(bootrom);
+        memoryUnit.setCartridge(cartridge);
        // memoryUnit.writeBootRom(bootrom);
-        int memSize = data.length + bootrom.length;
+        /*int memSize = data.length + bootrom.length;
         int tempMem[];
         if(memSize < 65536)
             tempMem = new int[65536];
@@ -48,7 +51,10 @@ public class Main {
         for(int i=0x100; i<data.length; i++)
             tempMem[i] = data[i] & 0xFF;
 
-        memoryUnit.setMainMem(tempMem);
+        memoryUnit.setMainMem(tempMem);*/
+        //for(int i=0;i<=0xFF;i++)
+            //mainMem[i] = bootrom[i] & 0xFF;
+        memoryUnit.setMainMem(mainMem);
         gpu.setGui(gui);
         gpu.setMemoryUnit(memoryUnit);
         gpu.setPixelFIFO(pixelFetcher.getPixelFIFO());
@@ -122,16 +128,14 @@ public class Main {
 
             k++;
 
-            if(cpu.getPc() == 0x100)
-            {
-                for(int i=0; i<0x100; i++)
-                    memoryUnit.writeData(i, data[i] & 0xFF);
-            }
+           // if(cpu.getPc() == 0x100)
+           // {
+           //     for(int i=0; i<0x100; i++)
+            //        memoryUnit.writeData(i, cartridge[i] & 0xFF);
+            //}
         }
 
 
-
-        //gui.refresh();
     }
 
 

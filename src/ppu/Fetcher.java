@@ -18,6 +18,7 @@ public class Fetcher {
     private String state = "READTILEID";
     private int previousLY=0;
     private int SCY = 0;
+    private int SCX = 0;
     private boolean isFetchingSprite = false;
     private boolean isFetchingBg = true;
     private boolean enqueueSpriteFetching = false;
@@ -144,7 +145,7 @@ public class Fetcher {
 
         switch(state){
             case "READTILEID":
-                mapAddress = 0x9800 + ((((gpu.getLY()+getSCY())%256)/8)*32) + tileInRow;
+                mapAddress = 0x9800 + ((((gpu.getLY()+getSCY())%256)/8)*32) + (getSCX()/0x08) + tileInRow;
                 curTileNumber = readTileNumber();
                 timer++;
                 state = "READTILEDATA0";
@@ -237,9 +238,17 @@ public class Fetcher {
         tileInRow = 0;
     }
 
+    public int getSCX()
+    {
+        this.SCX = memoryUnit.loadData(0xFF43);
+        if(this.SCX!=0)
+            System.out.println("asdfsdf");
+        return this.SCX;
+    }
+
     public int getSCY()
     {
-        this.SCY = memoryUnit.loadData(65346);
+        this.SCY = memoryUnit.loadData(0xFF42);
         return this.SCY;
     }
 

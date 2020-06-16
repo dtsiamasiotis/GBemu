@@ -21,6 +21,7 @@ public class Cpu {
     private boolean finalStageOfInstr = false;
     private int moreCycles = 0;
     private InterruptManager interruptManager;
+    private boolean halted = false;
 
     public void setA(int a)
     {
@@ -205,7 +206,7 @@ public class Cpu {
             //if(pc!=0xcc62)
         //    dumpInfoToFile(instructionToExec, pc);
        // }catch(IOException e){}
-      // System.out.println(instructionToExec.getDescription()+":"+String.format("%02X",pc)+","+instructionToExec.getOpCode());
+       System.out.println(instructionToExec.getDescription()+":"+String.format("%02X",pc)+","+instructionToExec.getOpCode());
 //if(pc==0x1ff2) {
 
    // int fromMem = memUnit.loadData(65346);
@@ -1005,6 +1006,7 @@ switch(instructionToExec.getOpCode())
         break;
     }
     case "76":{
+        this.halted = true;
         this.setPc(this.getPc()+instructionToExec.getByteLength());
         break;
     }
@@ -1858,6 +1860,14 @@ switch(instructionToExec.getOpCode())
 
     public void tick()
     {
+        if(interruptHasHappened())
+            halted = false;
+
+        if(halted)
+        {
+            return;
+        }
+
         if(timer==1) {
             curInstruction = fetchInstruction();
 
@@ -2485,6 +2495,14 @@ switch(instructionToExec.getOpCode())
         writer.append(value);
 
         writer.close();
+    }
+
+    public boolean interruptHasHappened()
+    {
+        if((interruptManager.getIF() & 0b00011111) != 0)
+            return true;
+        else
+            return false;
     }
 }
 
