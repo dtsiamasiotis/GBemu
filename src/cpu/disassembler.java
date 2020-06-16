@@ -75,7 +75,7 @@ public class disassembler {
         int dataAsInt[] = new int[(int)len];
 
         for(int i=0; i<(int)len; i++)
-            dataAsInt[i] = dataFromFile[i];
+            dataAsInt[i] = dataFromFile[i] & 0xFF;
 
         return dataAsInt;
     }

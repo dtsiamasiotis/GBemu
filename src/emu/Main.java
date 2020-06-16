@@ -18,21 +18,37 @@ import java.nio.file.Files;
 public class Main {
     public static void main(String[] args) throws IOException {
         Gui gui = new Gui();
-        MemoryUnit memoryUnit = new MemoryUnit();
+        disassembler reader = new disassembler();
+        int data[] = reader.readFile(args[1]);
+        MemoryUnit memoryUnit = new MemoryUnit(data.length);
         Fetcher pixelFetcher = new Fetcher();
         Gpu gpu = new Gpu();
         Cpu cpu = new Cpu();
+        Joypad joypad = new Joypad();
+        memoryUnit.setJoypad(joypad);
         InterruptManager interruptManager = new InterruptManager();
         Timer timer = new Timer();
         timer.setMemoryUnit(memoryUnit);
         interruptManager.setMemoryUnit(memoryUnit);
         cpu.setInterruptManager(interruptManager);
-        disassembler reader = new disassembler();
+
         int bootrom[] = reader.readBootRom(args[0]);
-        memoryUnit.writeBootRom(bootrom);
-        int data[] = reader.readFile(args[1]);
+        memoryUnit.setCartridge(data);
+       // memoryUnit.writeBootRom(bootrom);
+        int memSize = data.length + bootrom.length;
+        int tempMem[];
+        if(memSize < 65536)
+            tempMem = new int[65536];
+        else
+            tempMem = new int[memSize];
+
+        for(int i=0;i<=0xFF;i++)
+            tempMem[i] = bootrom[i] & 0xFF;
+
         for(int i=0x100; i<data.length; i++)
-            memoryUnit.writeData(i, data[i] & 0xFF);
+            tempMem[i] = data[i] & 0xFF;
+
+        memoryUnit.setMainMem(tempMem);
         gpu.setGui(gui);
         gpu.setMemoryUnit(memoryUnit);
         gpu.setPixelFIFO(pixelFetcher.getPixelFIFO());
@@ -40,10 +56,10 @@ public class Main {
         cpu.setMemUnit(memoryUnit);
         pixelFetcher.setGpu(gpu);
         gpu.setFetcher(pixelFetcher);
-        Joypad joypad = new Joypad();
+
         gui.setJoypad(joypad);
         gui.runGui();
-        memoryUnit.setJoypad(joypad);
+
         joypad.setMemoryUnit(memoryUnit);
 
         pixelFetcher.setMapAddress(38912);
