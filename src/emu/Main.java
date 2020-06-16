@@ -97,20 +97,12 @@ public class Main {
             if(timer.isRunning())
                 timerCounter++;
 
-            if(dividerCounter==255)
-            {
-               int[] memory = memoryUnit.getMainMem();
-
-               if(memory[0xFF04]>=255)
-                   memory[0xFF04] = 0;
-               else
-                   memory[0xFF04] = memory[0xFF04]+1;
-
-               memoryUnit.setMainMem(memory);
-               dividerCounter = 0;
+            if(dividerCounter == timer.cyclesToIncreaseDivider()-1) {
+                timer.increaseDivider();
+                dividerCounter = 0;
             }
-            else
-                dividerCounter++;
+
+            dividerCounter++;
 
             if(k==100)
                 k=0;

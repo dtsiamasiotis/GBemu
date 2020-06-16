@@ -59,10 +59,6 @@ public class MemoryUnit {
         //if(address == 65523)
             //System.out.println("afdsdf");
 
-        if(address==0xFF43)
-        {
-            System.out.println("scx:"+b);
-        }
         if (address == 0xFF46) {
             DMATransfer(b);
             return;

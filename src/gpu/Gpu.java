@@ -92,6 +92,7 @@ public class Gpu {
             state = "OAMSEARCH";
             VBLANKtimer = 0;
             resetLY();
+         //   checkForOAMInterrupt();
             memoryUnit.writeData(0xFF0F,0);
         }
         if(state.equals("HBLANK"))
@@ -133,9 +134,9 @@ public class Gpu {
             pixelTransferCycles = timer;
             timer = 0;
             state = "HBLANK";
-           // synchronized (this) {
-          //      gui.refresh();
-          //  }
+            //checkForLYCLYInterrupt();
+            //checkForHBlankInterrupt();
+
         }
 
         if(state.equals("OAMSEARCH"))
@@ -152,6 +153,30 @@ public class Gpu {
             scanLine();
             timer++;
         }
+
+        checkForLYCLYInterrupt();
+    }
+
+    private void checkForLYCLYInterrupt() {
+        int LYC = memoryUnit.loadData(0xFF45);
+        if(LY == LYC)
+        {
+            int LCDstat = memoryUnit.loadData(0xFF41);
+            if((LCDstat & 0b01000000) == 0x40)
+                memoryUnit.writeData(0xFF0F,2);
+        }
+    }
+
+    private void checkForOAMInterrupt() {
+        int LCDstat = memoryUnit.loadData(0xFF41);
+        if((LCDstat & 0b00100000) == 0x20)
+            memoryUnit.writeData(0xFF0F,2);
+    }
+
+    private void checkForHBlankInterrupt() {
+        int LCDstat = memoryUnit.loadData(0xFF41);
+        if((LCDstat & 0b00001000) == 0x8)
+            memoryUnit.writeData(0xFF0F,2);
     }
 
     public String getState(){

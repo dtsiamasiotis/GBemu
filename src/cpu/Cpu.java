@@ -206,12 +206,12 @@ public class Cpu {
             //if(pc!=0xcc62)
         //    dumpInfoToFile(instructionToExec, pc);
        // }catch(IOException e){}
-       System.out.println(instructionToExec.getDescription()+":"+String.format("%02X",pc)+","+instructionToExec.getOpCode());
-//if(pc==0x1ff2) {
+   //    System.out.println(instructionToExec.getDescription()+":"+String.format("%02X",pc)+","+instructionToExec.getOpCode());
+if(pc==0x95) {
 
    // int fromMem = memUnit.loadData(65346);
   //  System.out.println("addsdfsfsf");
-//}
+}
 switch(instructionToExec.getOpCode())
 {
     case "00":{
@@ -2461,6 +2461,12 @@ switch(instructionToExec.getOpCode())
                 memUnit.writeData(0xFF0F,memUnit.loadData(0xFF0F) & 0b11111110);
                 memUnit.pushWordToStack(this.pc);
                 this.setPc(0x40);
+            }
+            if ((interruptManager.getIE() & interruptManager.getIF() & 0x2) == 0x2) {
+                interruptManager.setIME(0);
+                memUnit.writeData(0xFF0F,memUnit.loadData(0xFF0F) & 0b11111101);
+                memUnit.pushWordToStack(this.pc);
+                this.setPc(0x48);
             }
             if ((interruptManager.getIE() & interruptManager.getIF() & 0x4) == 0x4) {
                 interruptManager.setIME(0);

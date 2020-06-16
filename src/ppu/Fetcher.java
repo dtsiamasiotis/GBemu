@@ -241,8 +241,6 @@ public class Fetcher {
     public int getSCX()
     {
         this.SCX = memoryUnit.loadData(0xFF43);
-        if(this.SCX!=0)
-            System.out.println("asdfsdf");
         return this.SCX;
     }
 

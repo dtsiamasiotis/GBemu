@@ -46,11 +46,27 @@ public class Timer {
             case 2:
                 return 64;
             case 3:
-                return 255;
+                return 256;
             default:
                 return 0;
         }
     }
 
+    public int cyclesToIncreaseDivider()
+    {
+        return 256;
+    }
 
+    public void increaseDivider()
+    {
+        int[] memory = memoryUnit.getMainMem();
+
+        if(memory[0xFF04]>=255) {
+            memory[0xFF04] = 0;
+        }
+        else
+            memory[0xFF04] = memory[0xFF04]+1;
+
+        memoryUnit.setMainMem(memory);
+    }
 }
