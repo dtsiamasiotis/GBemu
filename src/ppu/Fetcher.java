@@ -145,7 +145,7 @@ public class Fetcher {
 
         switch(state){
             case "READTILEID":
-                mapAddress = 0x9800 + ((((gpu.getLY()+getSCY())%256)/8)*32) + (getSCX()/0x08) + tileInRow;
+                mapAddress = 0x9800 + ((((gpu.getLY()+getSCY())%256)/8)*32) + (((getSCX()/0x08) + tileInRow) % 32);
                 curTileNumber = readTileNumber();
                 timer++;
                 state = "READTILEDATA0";
@@ -175,8 +175,6 @@ public class Fetcher {
                 break;
             case "READSPRITEDATA0":
                 data0 = readSpriteData0(spriteToShow.getSpriteNumber());
-                if(spriteToShow.getSpriteNumber()==0x7c)
-                    System.out.println("sfsdfsdfs");
                 timer++;
                 state = "READSPRITEDATA1";
                 break;

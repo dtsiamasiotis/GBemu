@@ -14,8 +14,12 @@ import timer.Timer;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
+
     public static void main(String[] args) throws IOException {
         Gui gui = new Gui();
         disassembler reader = new disassembler();
@@ -83,10 +87,59 @@ public class Main {
         //for(int i=0;i<20000;i++)
         cpu.setPc(0x0);
         //memoryUnit.setSp(0xFFFE);
-        int dividerCounter = 0;
+       /* int dividerCounter = 0;
         int timerCounter = 0;
-        int k=0;
-        while(true)
+        int k=0;*/
+
+        Runnable task = new Runnable() {
+            private int k=0;
+            int dividerCounter = 0;
+            int timerCounter = 0;
+
+            public void run(){
+                //for(int i = 0; i<10; i++)
+                if((timerCounter == timer.cyclesToIncreaseCounter()-1) && timer.isRunning()) {
+                    timer.increaseCounter();
+                    timerCounter = 0;
+                }
+
+                if(timer.isRunning())
+                    timerCounter++;
+
+                if(dividerCounter == timer.cyclesToIncreaseDivider()-1) {
+                    timer.increaseDivider();
+                    dividerCounter = 0;
+                }
+
+                dividerCounter++;
+
+                if(this.k==100)
+                    k=0;
+
+
+                cpu.tick();
+                gpu.tick();
+                if(gpu.getState().equals("HBLANK")) {
+                    pixelFetcher.getPixelFIFO().dropAll();
+                    pixelFetcher.setState("READTILEID");
+                    pixelFetcher.resetTileInRow();
+                }
+                if(gpu.getState().equals("PIXELTRANSFER") && k%2==0)
+                    pixelFetcher.tick();
+
+                k++;
+
+                // if(cpu.getPc() == 0x100)
+                // {
+                //     for(int i=0; i<0x100; i++)
+                //        memoryUnit.writeData(i, cartridge[i] & 0xFF);
+                //}
+            }
+        };
+
+        ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+        executor.scheduleAtFixedRate(task, 0, 300, TimeUnit.NANOSECONDS);
+       /* while(true)
         {
             //for(int i = 0; i<10; i++)
             if((timerCounter == timer.cyclesToIncreaseCounter()-1) && timer.isRunning()) {
@@ -125,7 +178,7 @@ public class Main {
            //     for(int i=0; i<0x100; i++)
             //        memoryUnit.writeData(i, cartridge[i] & 0xFF);
             //}
-        }
+        }*/
 
 
     }
