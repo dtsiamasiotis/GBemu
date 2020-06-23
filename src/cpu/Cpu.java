@@ -204,13 +204,13 @@ public class Cpu {
     public void executeInstruction(Instruction instructionToExec, Integer pc) {
         //try {
             //if(pc!=0xcc62)
-        //    dumpInfoToFile(instructionToExec, pc);
+          //  dumpInfoToFile(instructionToExec, pc);
        // }catch(IOException e){}
-   //    System.out.println(instructionToExec.getDescription()+":"+String.format("%02X",pc)+","+instructionToExec.getOpCode());
-if(pc==0x95) {
+  //     System.out.println(instructionToExec.getDescription()+":"+String.format("%02X",pc)+","+instructionToExec.getOpCode());
+if(pc==0xe0f) {
 
    // int fromMem = memUnit.loadData(65346);
-  //  System.out.println("addsdfsfsf");
+    System.out.println("addsdfsfsf");
 }
 switch(instructionToExec.getOpCode())
 {

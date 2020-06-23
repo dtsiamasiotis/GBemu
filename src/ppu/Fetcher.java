@@ -23,6 +23,10 @@ public class Fetcher {
     private boolean isFetchingBg = true;
     private boolean enqueueSpriteFetching = false;
     private Sprite spriteToShow;
+    private int startOfMap = 0x9800;
+    boolean overlayWindow = false;
+    boolean isDrawingWindow = false;
+    int xoffsetWindow;
 
     public int getLCDControlRegister()
     {
@@ -117,6 +121,7 @@ public class Fetcher {
     public void setMapAddress(int mapAddress) {
         this.mapAddress = mapAddress;
     }
+    public void setStartOfMap(int address) { this.startOfMap = address; }
 
     public void setMemoryUnit(MemoryUnit memoryUnit){
         this.memoryUnit = memoryUnit;
@@ -145,7 +150,13 @@ public class Fetcher {
 
         switch(state){
             case "READTILEID":
-                mapAddress = 0x9800 + ((((gpu.getLY()+getSCY())%256)/8)*32) + (((getSCX()/0x08) + tileInRow) % 32);
+                if(isDrawingWindow) {
+                    mapAddress = 0x9C00 + (((gpu.getLY() - getWy()) / 8) * 32) + (((xoffsetWindow + tileInRow)) % 32);
+                }
+                else
+                    mapAddress = getStartOfBgMap() + ((((gpu.getLY()+getSCY())%256)/8)*32) + (((getSCX()/0x08) + tileInRow) % 32);
+                if(mapAddress==0x9823)
+                    System.out.println("sfsdfs");
                 curTileNumber = readTileNumber();
                 timer++;
                 state = "READTILEDATA0";
@@ -226,6 +237,14 @@ public class Fetcher {
 
         }
 
+    private int getStartOfBgMap() {
+        int lcdRegister = memoryUnit.loadData(0xFF40);
+        if((lcdRegister & 0x8) == 0x8)
+            return 0x9C00;
+        else
+            return 0x9800;
+    }
+
     public void setState(String state)
     {
         this.state = state;
@@ -246,6 +265,18 @@ public class Fetcher {
     {
         this.SCY = memoryUnit.loadData(0xFF42);
         return this.SCY;
+    }
+
+    public int getWy()
+    {
+        int wy = memoryUnit.loadData(0xFF4A);
+        return wy;
+    }
+
+    public int getWx()
+    {
+        int wx = memoryUnit.loadData(0xFF4B);
+        return wx;
     }
 
     public void startFetchingSprite(Sprite spriteToFetch)
@@ -277,5 +308,34 @@ public class Fetcher {
     public void setSpriteToShow(Sprite spriteToShow)
     {
         this.spriteToShow = spriteToShow;
+    }
+
+    public boolean hasOverlayWindow()
+    {
+        return overlayWindow;
+    }
+
+    public void setOverlayWindow(boolean value)
+    {
+        this.overlayWindow = value;
+    }
+
+    public void setIsDrawingWindow(boolean value)
+    {
+        this.isDrawingWindow = value;
+    }
+
+    public boolean isDrawingWindow()
+    {
+        return isDrawingWindow;
+    }
+    public void startFetchingWindow() {
+        startOfMap = 0x9C00;
+        xoffsetWindow = (((gpu.getX() - getWx()+7)) / 0x08);
+        pixelFIFO.dropAll();
+        state = "READTILEID";
+        resetTileInRow();
+        overlayWindow = true;
+        isDrawingWindow = true;
     }
 }

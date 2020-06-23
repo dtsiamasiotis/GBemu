@@ -96,49 +96,54 @@ public class Main {
             int dividerCounter = 0;
             int timerCounter = 0;
 
-            public void run(){
-                //for(int i = 0; i<10; i++)
-                if((timerCounter == timer.cyclesToIncreaseCounter()-1) && timer.isRunning()) {
-                    timer.increaseCounter();
-                    timerCounter = 0;
-                }
+            public void run() {
+                //while (true) {
 
-                if(timer.isRunning())
-                    timerCounter++;
+                    if ((timerCounter == timer.cyclesToIncreaseCounter() - 1) && timer.isRunning()) {
+                        timer.increaseCounter();
+                        timerCounter = 0;
+                    }
 
-                if(dividerCounter == timer.cyclesToIncreaseDivider()-1) {
-                    timer.increaseDivider();
-                    dividerCounter = 0;
-                }
+                    if (timer.isRunning())
+                        timerCounter++;
 
-                dividerCounter++;
+                    if (dividerCounter == timer.cyclesToIncreaseDivider() - 1) {
+                        timer.increaseDivider();
+                        dividerCounter = 0;
+                    }
 
-                if(this.k==100)
-                    k=0;
+                    dividerCounter++;
+
+                    if (this.k == 100)
+                        k = 0;
 
 
-                cpu.tick();
-                gpu.tick();
-                if(gpu.getState().equals("HBLANK")) {
-                    pixelFetcher.getPixelFIFO().dropAll();
-                    pixelFetcher.setState("READTILEID");
-                    pixelFetcher.resetTileInRow();
-                }
-                if(gpu.getState().equals("PIXELTRANSFER") && k%2==0)
-                    pixelFetcher.tick();
+                    cpu.tick();
+                    gpu.tick();
+                    if (gpu.getState().equals("HBLANK")) {
+                        pixelFetcher.getPixelFIFO().dropAll();
+                        pixelFetcher.setState("READTILEID");
+                        pixelFetcher.resetTileInRow();
+                        pixelFetcher.setStartOfMap(0x9800);
+                    }
+                    if (gpu.getState().equals("PIXELTRANSFER") && k % 2 == 0)
+                        pixelFetcher.tick();
 
-                k++;
+                    k++;
 
-                // if(cpu.getPc() == 0x100)
-                // {
-                //     for(int i=0; i<0x100; i++)
-                //        memoryUnit.writeData(i, cartridge[i] & 0xFF);
+                    // if(cpu.getPc() == 0x100)
+                    // {
+                    //     for(int i=0; i<0x100; i++)
+                    //        memoryUnit.writeData(i, cartridge[i] & 0xFF);
+                    //}
+               // System.out.println("end:"+System.nanoTime());
                 //}
             }
         };
 
         ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-        executor.scheduleAtFixedRate(task, 0, 300, TimeUnit.NANOSECONDS);
+       // executor.execute(task);
+        executor.scheduleAtFixedRate(task, 0, 238, TimeUnit.NANOSECONDS);
        /* while(true)
         {
             //for(int i = 0; i<10; i++)

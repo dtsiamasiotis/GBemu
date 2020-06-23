@@ -132,7 +132,9 @@ public class MemoryUnit {
             int finalAddress = (address-0x4000) + (currentRomBank * 0x4000);
             return cartridge[finalAddress];
         }
-        //else
+        //SMURFS
+        if(address == 0xff8c)
+           return 0xc;
             return mainMem[address];
     }
 

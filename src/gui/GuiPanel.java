@@ -35,6 +35,7 @@ public class GuiPanel extends JPanel {
             img.setRGB(0, 0, 160, 144, rgb, 0, 160);
             validate();
             repaint();
+
     }
 
     @Override
@@ -42,12 +43,12 @@ public class GuiPanel extends JPanel {
         super.paintComponent(g);// <-- let panel draw itself
         Graphics2D g2d = (Graphics2D) g.create();
         // Graphics2D g2d = (Graphics2D)g;
-        g2d.drawImage(img, 0, 0, 160*4, 144*4, null);
-
+        g2d.drawImage(img, 0, 0, 160*2, 144*2, null);
+        g2d.dispose();
     }
 
     public Dimension getPreferredSize()
     {
-        return new Dimension(160*4,144*4);
+        return new Dimension(160*2,144*2);
     }
 }

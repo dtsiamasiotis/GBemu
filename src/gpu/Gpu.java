@@ -92,6 +92,7 @@ public class Gpu {
             state = "OAMSEARCH";
             VBLANKtimer = 0;
             resetLY();
+            fetcher.setIsDrawingWindow(false);
          //   checkForOAMInterrupt();
             memoryUnit.writeData(0xFF0F,0);
         }
@@ -121,7 +122,7 @@ public class Gpu {
 
         if(LY==144) {
             state = "VBLANK";
-            //System.out.println("VBLANK");
+           // System.out.println("VBLANK:"+System.currentTimeMillis());
             memoryUnit.writeData(0xFF0F,1);
             synchronized (this) {
                 gui.refresh();
@@ -147,14 +148,37 @@ public class Gpu {
             OAMtimer++;
         }
         if(state.equals("PIXELTRANSFER")) {
+            if(startOfWindow() && !fetcher.isDrawingWindow())
+                fetcher.startFetchingWindow();
             Sprite currentSprite = spriteInThisPosition(x);
             if(currentSprite!=null)
                 fetcher.startFetchingSprite(currentSprite);
+
             scanLine();
             timer++;
         }
 
         checkForLYCLYInterrupt();
+    }
+
+    private boolean startOfWindow() {
+        boolean windowStart = false;
+        int LCDregister = memoryUnit.loadData(0xFF40);
+        if((LCDregister & (1<<5))==0x20)
+        {
+            int wy = memoryUnit.loadData(0xFF4A);
+            int wx = memoryUnit.loadData(0xFF4B);
+            if(fetcher.hasOverlayWindow()) {
+                if ((wx - 7) == x)
+                    return true;
+            }
+            else {
+                if ((wy * 160 + (wx - 7)) == (LY * 160) + x)
+                    return true;
+            }
+        }
+
+        return windowStart;
     }
 
     private void checkForLYCLYInterrupt() {
