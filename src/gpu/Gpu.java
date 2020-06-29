@@ -81,6 +81,8 @@ public class Gpu {
         {
             state = "PIXELTRANSFER";
             OAMtimer = 0;
+            int LCDstat = memoryUnit.loadData(0xFF41);
+            memoryUnit.writeData(0xFF41,(LCDstat|0x3));
         }
         if(HBLANKtimer+(pixelTransferCycles)==376)
         {
@@ -95,6 +97,8 @@ public class Gpu {
             fetcher.setIsDrawingWindow(false);
          //   checkForOAMInterrupt();
             memoryUnit.writeData(0xFF0F,0);
+            int LCDstat = memoryUnit.loadData(0xFF41);
+            memoryUnit.writeData(0xFF41,((LCDstat & 0b11111110))|0x2);
         }
         if(state.equals("HBLANK"))
         {
@@ -124,6 +128,8 @@ public class Gpu {
             state = "VBLANK";
            // System.out.println("VBLANK:"+System.currentTimeMillis());
             memoryUnit.writeData(0xFF0F,1);
+            int LCDstat = memoryUnit.loadData(0xFF41);
+            memoryUnit.writeData(0xFF41,(LCDstat|0x1));
             synchronized (this) {
                 gui.refresh();
             }
@@ -135,6 +141,8 @@ public class Gpu {
             pixelTransferCycles = timer;
             timer = 0;
             state = "HBLANK";
+            int LCDstat = memoryUnit.loadData(0xFF41);
+            memoryUnit.writeData(0xFF41,(LCDstat & 0b11111100));
             //checkForLYCLYInterrupt();
             //checkForHBlankInterrupt();
 
@@ -252,5 +260,6 @@ public class Gpu {
         else
             return false;
     }
+
 
 }
