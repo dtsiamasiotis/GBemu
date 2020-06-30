@@ -1,6 +1,7 @@
 package mmu;
 
 import joypad.Joypad;
+import serial.SerialPort;
 
 import java.util.Stack;
 
@@ -16,7 +17,7 @@ public class MemoryUnit {
     private int mode = 0;
     private int[] cartridge;
     private int[] bootRom;
-
+    private SerialPort serialPort;
    /* public MemoryUnit(int romSize)
     {
         if(romSize < 65536)
@@ -44,6 +45,10 @@ public class MemoryUnit {
 
     public void setJoypad(Joypad joypad) {
         this.joypad = joypad;
+    }
+
+    public void setSerialPort(SerialPort serialPort) {
+        this.serialPort = serialPort;
     }
 
     public void setSp(int stackPointer)
@@ -105,6 +110,14 @@ public class MemoryUnit {
         if (address == 0xFF00)
             joypad.setTemp(b);
 
+        if (address == 0xFF01)
+            serialPort.setSb(b);
+        if (address == 0xFF02) {
+            serialPort.setSc(b);
+            if ((serialPort.getSc() & (1 << 7)) != 0) {
+                serialPort.startTransfer();
+            }
+        }
         //if(address == 0xFF40)
             //System.out.print("edw");
 
@@ -133,9 +146,16 @@ public class MemoryUnit {
             return cartridge[finalAddress];
         }
         //SMURFS
-        if(address == 0xff8c)
-           return 0xc;
-            return mainMem[address];
+       // if(address == 0xff8c)
+         //  return 0xc;
+
+        if (address == 0xff01) {
+            return serialPort.getSb();
+        } else if (address == 0xff02) {
+            return serialPort.getSc() | 0b01111110;
+        }
+
+        return mainMem[address];
     }
 
     public void pushToStack(Integer pc)

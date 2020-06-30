@@ -9,6 +9,7 @@ import joypad.Joypad;
 import mmu.MemoryUnit;
 import ppu.Fetcher;
 import ppu.Pixel;
+import serial.SerialPort;
 import timer.Timer;
 
 import java.io.File;
@@ -31,6 +32,9 @@ public class Main {
         Gpu gpu = new Gpu();
         Cpu cpu = new Cpu();
         Joypad joypad = new Joypad();
+        SerialPort serialPort = new SerialPort();
+        serialPort.setMemoryUnit(memoryUnit);
+        memoryUnit.setSerialPort(serialPort);
         memoryUnit.setJoypad(joypad);
         InterruptManager interruptManager = new InterruptManager();
         Timer timer = new Timer();
@@ -130,7 +134,7 @@ public class Main {
                         pixelFetcher.tick();
 
                     k++;
-
+                    serialPort.tick();
                     // if(cpu.getPc() == 0x100)
                     // {
                     //     for(int i=0; i<0x100; i++)

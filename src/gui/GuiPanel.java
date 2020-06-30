@@ -7,7 +7,8 @@ import java.awt.image.BufferedImage;
 public class GuiPanel extends JPanel {
     private BufferedImage img;
     private int[] rgb;
-    private int[] pallette;
+    private int[] palette;
+    private int[] availableColors;
     public GuiPanel(){
         setSize(160,144);
         setVisible(true);
@@ -16,8 +17,9 @@ public class GuiPanel extends JPanel {
                 getDefaultConfiguration();
         img = gfxConfig.createCompatibleImage(160, 144);
         rgb = new int[160*144];
-        pallette = new int[]{0x9bbc0f,0x306230,0x8bac0f,0x0F380f};
-
+        palette = new int[4];//{0x9bbc0f,0x306230,0x8bac0f,0x0F380f};
+        //availableColors = new int[]{0x9bbc0f,0x306230,0x8bac0f,0x0F380f};
+        availableColors = new int[]{0xe0f8d0,0x88c070,0x346856,0x081820};
     }
 
     public void setPixelAtPosition(int position, int pixelValue)
@@ -27,7 +29,20 @@ public class GuiPanel extends JPanel {
 
     public int encodePixelToColorPallette(int pixelValue)
     {
-        return pallette[pixelValue];
+
+        return palette[pixelValue];
+
+    }
+
+    public void updatePalette(int paletteRegister) {
+        int color0 = paletteRegister & 0b00000011;
+        int color1 = (paletteRegister & 0b00001100) >> 2;
+        int color2 = (paletteRegister & 0b00110000) >> 4;
+        int color3 = (paletteRegister & 0b11000000) >> 6;
+        palette[0] = availableColors[color0];
+        palette[1] = availableColors[color1];
+        palette[2] = availableColors[color2];
+        palette[3] = availableColors[color3];
     }
 
     public void refresh()

@@ -41,6 +41,10 @@ public class Sprite {
         return positionY;
     }
 
+    public int getOptions() {
+        return options;
+    }
+
     public void setAlreadyShown(boolean alreadyShown){
         this.alreadyShown = alreadyShown;
     }

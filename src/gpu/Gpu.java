@@ -58,9 +58,18 @@ public class Gpu {
         {
 
             int position = (LY*160)+x;
+            int paletteRegister = 0;
+            if(pixel.getType().equals("BG"))
+                paletteRegister = memoryUnit.loadData(0xFF47);
+            else{
+                if(pixel.getObjPaletteNumber() == 0)
+                    paletteRegister = memoryUnit.loadData(0xFF48);
+                if(pixel.getObjPaletteNumber() == 1)
+                    paletteRegister = memoryUnit.loadData(0xFF49);
+            }
 
             try {
-                gui.setPixelAtPosition(position, pixel.getBothBits());
+                gui.setPixelAtPosition(position, pixel.getBothBits(), paletteRegister);
             }catch (java.lang.ArrayIndexOutOfBoundsException e){}
             finally {
             //    System.out.println("LY:"+LY+"x:"+x+","+position);

@@ -41,8 +41,9 @@ public class Gui extends JPanel {
         f.setVisible(true);
     }
 
-    public void setPixelAtPosition(int position, int pixelValue)
+    public void setPixelAtPosition(int position, int pixelValue, int paletteRegister)
     {
+        guiPanel.updatePalette(paletteRegister);
         guiPanel.setPixelAtPosition(position,pixelValue);
     }
 

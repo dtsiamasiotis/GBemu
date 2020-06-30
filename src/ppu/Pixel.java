@@ -5,6 +5,7 @@ public class Pixel {
     private int secondBit;
     private String type;
     private int id;
+    private int objPaletteNumber;
 
     public void setFirstBit(int firstBit) {
         this.firstBit = firstBit;
@@ -20,6 +21,10 @@ public class Pixel {
 
     public void setId(int id) { this.id = id; }
 
+    public void setObjPaletteNumber(int objPaletteNumber) {
+        this.objPaletteNumber = objPaletteNumber;
+    }
+
     public int getFirstBit() {
         return firstBit;
     }
@@ -32,9 +37,20 @@ public class Pixel {
         return id;
     }
 
+    public int getObjPaletteNumber() {
+        return objPaletteNumber;
+    }
+
+    public String getType() {
+        return type;
+    }
+
     public int getBothBits(){
-        int first = firstBit<<1;
-        return first|secondBit;
+       // int first = firstBit<<1;
+       // return first|secondBit;
+        int second = secondBit<<1;
+        return second|firstBit;
+
     }
 
 
