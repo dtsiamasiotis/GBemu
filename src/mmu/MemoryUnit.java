@@ -18,6 +18,7 @@ public class MemoryUnit {
     private int[] cartridge;
     private int[] bootRom;
     private SerialPort serialPort;
+    private boolean enableExternalRam = false;
    /* public MemoryUnit(int romSize)
     {
         if(romSize < 65536)
@@ -64,6 +65,28 @@ public class MemoryUnit {
         //if(address == 65523)
             //System.out.println("afdsdf");
 
+        if(address >= 0x0000 && address <= 0x1FFF && isMBC1())
+        {
+            if(((b & 00001111) & 0b1010) == 0b1010)
+                enableExternalRam = true;
+            else
+                enableExternalRam = false;
+            return;
+        }
+        if(address>=0xA000 && address<=0xBFFF && isMBC1() && enableExternalRam)
+        {
+            if(mode == 0)
+            {
+                int finalAddress = address & 0b1111111111111;
+                mainMem[finalAddress] = b;
+            }
+            if(mode == 1)
+            {
+                int finalAddress = address & 0b1111111111111;
+                finalAddress = (bankRegister2 << 13) | finalAddress;
+                mainMem[finalAddress] = b;
+            }
+        }
         if (address == 0xFF46) {
             DMATransfer(b);
             return;
@@ -144,6 +167,20 @@ public class MemoryUnit {
 
             int finalAddress = (address-0x4000) + (currentRomBank * 0x4000);
             return cartridge[finalAddress];
+        }
+        if(address>=0xA000 && address<=0xBFFF && isMBC1() && enableExternalRam)
+        {
+            if(mode == 0)
+            {
+                int finalAddress = address & 0b1111111111111;
+                return mainMem[finalAddress];
+            }
+            if(mode == 1)
+            {
+                int finalAddress = address & 0b1111111111111;
+                finalAddress = (bankRegister2 << 13) | finalAddress;
+                return mainMem[finalAddress];
+            }
         }
         //SMURFS
        // if(address == 0xff8c)
@@ -243,7 +280,7 @@ public class MemoryUnit {
     }
 
     public boolean isMBC1() {
-        if(cartridge[0x0147] == 0x1)
+        if(cartridge[0x0147] >= 0x1 && cartridge[0x0147] <= 0x3)
             return true;
         else
             return false;
