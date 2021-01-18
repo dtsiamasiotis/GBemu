@@ -1604,7 +1604,7 @@ public class instructionMapper {
         instructionsMap[242].setOpCode("F2");
         instructionsMap[242].setOperand1("A");
         instructionsMap[242].setOperand2("(C)");
-        instructionsMap[242].setByteLength(2);
+        instructionsMap[242].setByteLength(1);
         instructionsMap[242].setCycles(8);
 
         instructionsMap[243].setDescription("DI");
