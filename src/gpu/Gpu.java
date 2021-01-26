@@ -244,7 +244,7 @@ public class Gpu {
             sprite.setSpriteNumber(memoryUnit.loadData(65026+(i*4)));
             sprite.setOptions(memoryUnit.loadData(65027+(i*4)));
 
-            if(sprite.getPositionX()!=0 && (LY + 16>=sprite.getPositionY()) && (LY + 16<sprite.getPositionY()+8))
+            if(sprite.getPositionX()!=0 && (LY + 16>=sprite.getPositionY()) && (LY + 16<sprite.getPositionY()+fetcher.spriteSize()))
                 visibleSprites.add(sprite);
         }
     }
@@ -270,5 +270,12 @@ public class Gpu {
             return false;
     }
 
-
+    public boolean spriteSizeIs8By16()
+    {
+        int lcdRegister = memoryUnit.loadData(0xFF40);
+        if((lcdRegister & 0x4) == 0x4)
+            return true;
+        else
+            return false;
+    }
 }

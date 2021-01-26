@@ -88,6 +88,8 @@ public class Fetcher {
 
     public int readSpriteData0(int spriteNumber)
     {
+        if(spriteSize()==16)
+            spriteNumber &= 0xfe;
         int spriteLine = 0;
         int spriteNumberAddress = 0x8000;
         if(spriteToShow.isYFlipped()) {
@@ -104,6 +106,8 @@ public class Fetcher {
 
     public int readSpriteData1(int spriteNumber)
     {
+        if(spriteSize()==16)
+            spriteNumber &= 0xfe;
         int spriteLine = 0;
         int spriteNumberAddress = 0x8000;
         if(spriteToShow.isYFlipped()) {
@@ -155,7 +159,7 @@ public class Fetcher {
                 }
                 else
                     mapAddress = getStartOfBgMap() + ((((gpu.getLY()+getSCY())%256)/8)*32) + (((getSCX()/0x08) + tileInRow) % 32);
-                //if(mapAddress==0x9823)
+               // if(mapAddress==0x98c3)
                   //  System.out.println("sfsdfs");
                 curTileNumber = readTileNumber();
                 timer++;
@@ -231,6 +235,7 @@ public class Fetcher {
                     tileInRow++;
                 }
                     //if(isFetchingSprite)
+                   // if(!gpu.spriteSizeIs8By16())
                         startFetchingBg();
 
                 }
@@ -296,6 +301,7 @@ public class Fetcher {
     {
         isFetchingSprite = false;
         isFetchingBg = true;
+        overlayWindow = false;
         pixelFIFO.setCanRemovePixel(true);
         state = "READTILEID";
     }
@@ -338,5 +344,13 @@ public class Fetcher {
         resetTileInRow();
         overlayWindow = true;
         isDrawingWindow = true;
+    }
+
+    public int spriteSize() {
+        int lcdRegister = memoryUnit.loadData(0xFF40);
+        if((lcdRegister & 0x4) == 0x4)
+            return 16;
+        else
+            return 8;
     }
 }

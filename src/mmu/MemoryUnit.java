@@ -62,8 +62,8 @@ public class MemoryUnit {
     }
 
     public void writeData(int address, int b) {
-        //if(address == 65523)
-            //System.out.println("afdsdf");
+       // if(address == 0x98c3)
+           // System.out.println("afdsdf");
 
         if(address >= 0x0000 && address <= 0x1FFF && isMBC1())
         {
@@ -183,8 +183,8 @@ public class MemoryUnit {
             }
         }
         //SMURFS
-       // if(address == 0xff8c)
-         //  return 0xc;
+        if(address == 0xff8c)
+           return 0xc;
 
         if (address == 0xff01) {
             return serialPort.getSb();

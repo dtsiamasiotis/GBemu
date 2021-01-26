@@ -69,8 +69,8 @@ public class Cpu {
        // byte[] tmpBytes = new byte[2];
         //tmpBytes[0] = this.getH();
         //tmpBytes[1] = l;
-        if(l>0xff)
-            System.out.println("asfdd");
+        //if(l>0xff)
+            //System.out.println("asfdd");
         registers[6] = l;
 
         //this.setHL(tmpBytes);
@@ -204,13 +204,13 @@ public class Cpu {
     public void executeInstruction(Instruction instructionToExec, Integer pc) {
         //try {
             //if(pc!=0xcc62)
-          //  dumpInfoToFile(instructionToExec, pc);
+      //      dumpInfoToFile(instructionToExec, pc);
        // }catch(IOException e){}
-    //   System.out.println(instructionToExec.getDescription()+":"+String.format("%02X",pc)+","+instructionToExec.getOpCode());
-if(pc==0xe0f) {
+      // System.out.println(instructionToExec.getDescription()+":"+String.format("%02X",pc)+","+instructionToExec.getOpCode());
+if(pc==0x528) {
 
    // int fromMem = memUnit.loadData(65346);
- //   System.out.println("addsdfsfsf");
+    System.out.println("addsdfsfsf");
 }
 switch(instructionToExec.getOpCode())
 {
