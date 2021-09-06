@@ -11,7 +11,7 @@ public class disassembler {
 
         //FileInputStream fin = new FileInputStream("//home//dimitris//DMG_ROM.bin");
 
-        File f = new File("/home/dimitris/tetris.gb");
+        File f = new File("/home/dimitris/gameboy_roms/07-jr,jp,call,ret,rst.gb");
         long len = f.length();
         System.out.println("Rom length:"+len);
         byte data[] = new byte[(int)len];

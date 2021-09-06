@@ -31,7 +31,7 @@ public class Gui extends JPanel {
     private void createAndShowGUI() {
         System.out.println("Created GUI on EDT? "+
                 SwingUtilities.isEventDispatchThread());
-        JFrame f = new JFrame("Swing Paint Demo");
+        JFrame f = new JFrame("GBemu");
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         Keylistener joypadListener = new Keylistener();
         joypadListener.setJoypad(this.joypad);

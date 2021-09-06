@@ -2,6 +2,7 @@ package mmu;
 
 import joypad.Joypad;
 import serial.SerialPort;
+import tileViewer.TileViewer;
 
 import java.util.Stack;
 
@@ -19,6 +20,7 @@ public class MemoryUnit {
     private int[] bootRom;
     private SerialPort serialPort;
     private boolean enableExternalRam = false;
+    private TileViewer tileViewer;
    /* public MemoryUnit(int romSize)
     {
         if(romSize < 65536)
@@ -61,9 +63,18 @@ public class MemoryUnit {
         return sp;
     }
 
+    public void setTileViewer(TileViewer tileViewer) {
+        this.tileViewer = tileViewer;
+    }
+
     public void writeData(int address, int b) {
        // if(address == 0x98c3)
            // System.out.println("afdsdf");
+        if(address >=0x8000 && address <= 0x9800){
+            synchronized (this) {
+                tileViewer.refresh();
+            }
+        }
 
         if(address >= 0x0000 && address <= 0x1FFF && isMBC1())
         {

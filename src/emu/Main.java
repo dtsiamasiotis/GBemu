@@ -10,6 +10,7 @@ import mmu.MemoryUnit;
 import ppu.Fetcher;
 import ppu.Pixel;
 import serial.SerialPort;
+import tileViewer.TileViewer;
 import timer.Timer;
 
 import java.io.File;
@@ -23,11 +24,12 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
         Gui gui = new Gui();
+        TileViewer tileViewer = new TileViewer();
         disassembler reader = new disassembler();
         int cartridge[] = reader.readFile(args[1]);
         int mainMem[] = new int[65536];
         MemoryUnit memoryUnit = new MemoryUnit();
-
+        memoryUnit.setTileViewer(tileViewer);
         Fetcher pixelFetcher = new Fetcher();
         Gpu gpu = new Gpu();
         Cpu cpu = new Cpu();
@@ -73,6 +75,8 @@ public class Main {
 
         gui.setJoypad(joypad);
         gui.runGui();
+        tileViewer.setTilesMemory(memoryUnit);
+        tileViewer.runGui();
 
         joypad.setMemoryUnit(memoryUnit);
 
