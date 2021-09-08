@@ -70,11 +70,7 @@ public class MemoryUnit {
     public void writeData(int address, int b) {
        // if(address == 0x98c3)
            // System.out.println("afdsdf");
-        if(address >=0x8000 && address <= 0x9800){
-            synchronized (this) {
-                tileViewer.refresh();
-            }
-        }
+
 
         if(address >= 0x0000 && address <= 0x1FFF && isMBC1())
         {
@@ -155,6 +151,11 @@ public class MemoryUnit {
         //if(address == 0xFF40)
             //System.out.print("edw");
 
+        if(address >=0x8000 && address <= 0x9800){
+                  //synchronized (this) {
+            tileViewer.refresh(address);
+               //  }
+        }
     }
 
     public int loadData(int address){

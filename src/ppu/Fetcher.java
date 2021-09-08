@@ -155,7 +155,7 @@ public class Fetcher {
         switch(state){
             case "READTILEID":
                 if(isDrawingWindow) {
-                    mapAddress = 0x9C00 + (((gpu.getLY() - getWy()) / 8) * 32) + (((xoffsetWindow + tileInRow)) % 32);
+                    mapAddress = getStartOfWindowMap() + (((gpu.getLY() - getWy()) / 8) * 32) + (((xoffsetWindow + tileInRow)) % 32);
                 }
                 else
                     mapAddress = getStartOfBgMap() + ((((gpu.getLY()+getSCY())%256)/8)*32) + (((getSCX()/0x08) + tileInRow) % 32);
@@ -251,6 +251,14 @@ public class Fetcher {
             return 0x9800;
     }
 
+    private int getStartOfWindowMap() {
+        int lcdRegister = memoryUnit.loadData(0xFF40);
+        if((lcdRegister & 0x40) == 0)
+            return 0x9800;
+        else
+            return 0x9C00;
+    }
+
     public void setState(String state)
     {
         this.state = state;
@@ -337,7 +345,7 @@ public class Fetcher {
         return isDrawingWindow;
     }
     public void startFetchingWindow() {
-        startOfMap = 0x9C00;
+        startOfMap = getStartOfWindowMap();
         xoffsetWindow = (((gpu.getX() - getWx()+7)) / 0x08);
         pixelFIFO.dropAll();
         state = "READTILEID";
