@@ -3,11 +3,13 @@ package emu;
 import cpu.Cpu;
 import cpu.disassembler;
 import gpu.Gpu;
+import gpu.GpuState;
 import gui.Gui;
 import interrupts.InterruptManager;
 import joypad.Joypad;
 import mmu.MemoryUnit;
 import ppu.Fetcher;
+import ppu.FetcherState;
 import ppu.Pixel;
 import serial.SerialPort;
 import timer.Timer;
@@ -124,13 +126,13 @@ public class Main {
 
                     cpu.tick();
                     gpu.tick();
-                    if (gpu.getState().equals("HBLANK")) {
+                    if (gpu.getState() == GpuState.HBLANK) {
                         pixelFetcher.getPixelFIFO().dropAll();
-                        pixelFetcher.setState("READTILEID");
+                        pixelFetcher.setState(FetcherState.READTILEID);
                         pixelFetcher.resetTileInRow();
                         pixelFetcher.setStartOfMap(0x9800);
                     }
-                    if (gpu.getState().equals("PIXELTRANSFER") && k % 2 == 0)
+                    if (gpu.getState() == GpuState.PIXELTRANSFER && k % 2 == 0)
                         pixelFetcher.tick();
 
                     k++;

@@ -16,13 +16,15 @@ public class Gpu {
     private Gui gui;
     private int timer = 0;
     private int x = 0;
-    private String state = "OAMSEARCH";
+    private GpuState state = GpuState.OAMSEARCH;
     private int HBLANKtimer = 0;
     private int VBLANKtimer = 0;
     private int OAMtimer = 0;
     private ArrayList<Sprite> visibleSprites=new ArrayList<>();
     private Fetcher fetcher;
     private int pixelTransferCycles = 0;
+    private static final int Xdimension = 160;
+    private static final int Ydimension = 144;
 
     public void increaseLY()
     {
@@ -57,7 +59,7 @@ public class Gpu {
         if(pixel!=null)
         {
 
-            int position = (LY*160)+x;
+            int position = (LY*Xdimension)+x;
             int paletteRegister = 0;
             if(pixel.getType().equals("BG"))
                 paletteRegister = memoryUnit.loadData(0xFF47);
@@ -88,19 +90,19 @@ public class Gpu {
 
         if(OAMtimer==80)
         {
-            state = "PIXELTRANSFER";
+            state = GpuState.PIXELTRANSFER;
             OAMtimer = 0;
             int LCDstat = memoryUnit.loadData(0xFF41);
             memoryUnit.writeData(0xFF41,(LCDstat|0x3));
         }
         if(HBLANKtimer+(pixelTransferCycles)==376)
         {
-            state = "OAMSEARCH";
+            state = GpuState.OAMSEARCH;
             HBLANKtimer = 0;
         }
         if(VBLANKtimer==4560)
         {
-            state = "OAMSEARCH";
+            state = GpuState.OAMSEARCH;
             VBLANKtimer = 0;
             resetLY();
             fetcher.setIsDrawingWindow(false);
@@ -109,12 +111,12 @@ public class Gpu {
             int LCDstat = memoryUnit.loadData(0xFF41);
             memoryUnit.writeData(0xFF41,((LCDstat & 0b11111110))|0x2);
         }
-        if(state.equals("HBLANK"))
+        if(state == GpuState.HBLANK)
         {
             HBLANKtimer++;
             return;
         }
-        if(state.equals("VBLANK"))
+        if(state == GpuState.VBLANK)
         {
             if(VBLANKtimer%(456)==0) {
                 increaseLY();
@@ -133,8 +135,8 @@ public class Gpu {
             }
         }*/
 
-        if(LY==144) {
-            state = "VBLANK";
+        if(LY==Ydimension) {
+            state = GpuState.VBLANK;
            // System.out.println("VBLANK:"+System.currentTimeMillis());
             memoryUnit.writeData(0xFF0F,1);
             int LCDstat = memoryUnit.loadData(0xFF41);
@@ -144,12 +146,12 @@ public class Gpu {
             }
         }
 
-        if(x==160) {
+        if(x==Xdimension) {
             x = 0;
             increaseLY();
             pixelTransferCycles = timer;
             timer = 0;
-            state = "HBLANK";
+            state = GpuState.HBLANK;
             int LCDstat = memoryUnit.loadData(0xFF41);
             memoryUnit.writeData(0xFF41,(LCDstat & 0b11111100));
             //checkForLYCLYInterrupt();
@@ -157,14 +159,14 @@ public class Gpu {
 
         }
 
-        if(state.equals("OAMSEARCH"))
+        if(state == GpuState.OAMSEARCH)
         {
             if(OAMtimer==79)
                 handleOAMSearch();
 
             OAMtimer++;
         }
-        if(state.equals("PIXELTRANSFER")) {
+        if(state == GpuState.PIXELTRANSFER) {
             if(startOfWindow() && !fetcher.isDrawingWindow())
                 fetcher.startFetchingWindow();
             Sprite currentSprite = spriteInThisPosition(x);
@@ -190,7 +192,7 @@ public class Gpu {
                     return true;
             }
             else {
-                if ((wy * 160 + (wx - 7)) == (LY * 160) + x)
+                if ((wy * Xdimension + (wx - 7)) == (LY * Xdimension) + x)
                     return true;
             }
         }
@@ -220,7 +222,7 @@ public class Gpu {
             memoryUnit.writeData(0xFF0F,2);
     }
 
-    public String getState(){
+    public GpuState getState(){
         return this.state;
     }
 

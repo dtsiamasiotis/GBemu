@@ -15,7 +15,7 @@ public class Fetcher {
     private int data1;
     private Gpu gpu;
     private int tileInRow;
-    private String state = "READTILEID";
+    private FetcherState state = FetcherState.READTILEID;
     private int previousLY=0;
     private int SCY = 0;
     private int SCX = 0;
@@ -153,7 +153,7 @@ public class Fetcher {
     {
 
         switch(state){
-            case "READTILEID":
+            case READTILEID:
                 if(isDrawingWindow) {
                     mapAddress = 0x9C00 + (((gpu.getLY() - getWy()) / 8) * 32) + (((xoffsetWindow + tileInRow)) % 32);
                 }
@@ -163,14 +163,14 @@ public class Fetcher {
                   //  System.out.println("sfsdfs");
                 curTileNumber = readTileNumber();
                 timer++;
-                state = "READTILEDATA0";
+                state = FetcherState.READTILEDATA0;
                 break;
-            case "READTILEDATA0":
+            case READTILEDATA0:
                 data0 = readData0(curTileNumber);
                 timer++;
-                state = "READTILEDATA1";
+                state = FetcherState.READTILEDATA1;
                 break;
-            case "READTILEDATA1":
+            case READTILEDATA1:
                 data1 = readData1(curTileNumber);
                 for(int i=7;i>=0;i--)
                 {
@@ -180,20 +180,20 @@ public class Fetcher {
                     tempPixels[7-i] = pixel;
 
                 }
-                state = "PUSHPIXELS";
+                state = FetcherState.PUSHPIXELS;
                 break;
-            case "READSPRITEID":
+            case READSPRITEID:
                // mapAddress = 38912 + ((((gpu.getLY()+getSCY())%256)/8)*32);
                // curTileNumber = readTileNumber();
                 timer++;
-                state = "READSPRITEDATA0";
+                state = FetcherState.READSPRITEDATA0;
                 break;
-            case "READSPRITEDATA0":
+            case READSPRITEDATA0:
                 data0 = readSpriteData0(spriteToShow.getSpriteNumber());
                 timer++;
-                state = "READSPRITEDATA1";
+                state = FetcherState.READSPRITEDATA1;
                 break;
-            case "READSPRITEDATA1":
+            case READSPRITEDATA1:
                 data1 = readSpriteData1(spriteToShow.getSpriteNumber());
                 for(int i=7;i>=0;i--)
                 {
@@ -204,9 +204,9 @@ public class Fetcher {
                     tempPixels[7-i] = pixel;
 
                 }
-                state = "PUSHPIXELS";
+                state = FetcherState.PUSHPIXELS;
                 break;
-            case "PUSHPIXELS":
+            case PUSHPIXELS:
                 if(isFetchingSprite) {
                     if(!spriteToShow.isXFlipped()) {
                         for (int j = 0; j < 8; j++) {
@@ -251,7 +251,7 @@ public class Fetcher {
             return 0x9800;
     }
 
-    public void setState(String state)
+    public void setState(FetcherState state)
     {
         this.state = state;
     }
@@ -293,7 +293,7 @@ public class Fetcher {
         isFetchingSprite = true;
         isFetchingBg = false;
         pixelFIFO.setCanRemovePixel(false);
-        state = "READSPRITEID";
+        state = FetcherState.READSPRITEID;
         spriteToShow = spriteToFetch;
     }
 
@@ -303,7 +303,7 @@ public class Fetcher {
         isFetchingBg = true;
         overlayWindow = false;
         pixelFIFO.setCanRemovePixel(true);
-        state = "READTILEID";
+        state = FetcherState.READTILEID;
     }
 
     public void enqueueSpriteFetching()
@@ -340,7 +340,7 @@ public class Fetcher {
         startOfMap = 0x9C00;
         xoffsetWindow = (((gpu.getX() - getWx()+7)) / 0x08);
         pixelFIFO.dropAll();
-        state = "READTILEID";
+        state = FetcherState.READTILEID;
         resetTileInRow();
         overlayWindow = true;
         isDrawingWindow = true;
