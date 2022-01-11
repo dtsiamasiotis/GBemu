@@ -1,0 +1,11 @@
+package ppu;
+
+public enum FetcherState {
+    READTILEID,
+    READTILEDATA0,
+    READTILEDATA1,
+    READSPRITEID,
+    READSPRITEDATA0,
+    READSPRITEDATA1,
+    PUSHPIXELS
+}
